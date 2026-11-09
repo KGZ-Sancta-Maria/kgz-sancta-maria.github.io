@@ -1,0 +1,30 @@
+{
+ "name": "MyWil",
+ "short_name": "MyWil",
+ "description": "Sancta Maria Wil",
+ "lang": "fr",
+ "id": "wil.html",
+ "start_url": "wil.html",
+ "scope": "./",
+ "display": "standalone",
+ "background_color": "#eef1ec",
+ "theme_color": "#1f5230",
+ "icons": [
+  {
+   "src": "wil-192.png",
+   "sizes": "192x192",
+   "type": "image/png"
+  },
+  {
+   "src": "wil-512.png",
+   "sizes": "512x512",
+   "type": "image/png"
+  },
+  {
+   "src": "wil-512.png",
+   "sizes": "512x512",
+   "type": "image/png",
+   "purpose": "maskable"
+  }
+ ]
+}
