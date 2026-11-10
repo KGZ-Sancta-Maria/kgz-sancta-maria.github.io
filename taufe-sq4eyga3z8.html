@@ -87,7 +87,9 @@ body.embed{padding-top:6px}body.embed header .org b{display:none}body.embed h1{f
     <div class="ret" id="pubMail" hidden>
       <b id="retT"></b>
       <div class="opt"><i>A</i><div><span id="retA"></span>
-        <div class="actions" style="margin-top:6px"><button type="button" class="btn pri" id="bShare"></button><a class="btn" id="bMail" href="#"></a></div>
+        <div class="actions" style="margin-top:6px"><button type="button" class="btn pri" id="bShare"></button></div>
+        <p class="hint" id="mailWhich" style="margin:8px 0 4px"></p>
+        <div class="actions"><a class="btn" id="bGmail" href="#" target="_blank" rel="noopener">Gmail</a><a class="btn" id="bOutl" href="#" target="_blank" rel="noopener">Outlook.com / Hotmail</a><a class="btn" id="bMail" href="#"></a></div>
         <div class="adr"><span id="retAdr"></span> <code>wil@fsspx.ch</code> <button type="button" class="btn" id="bAdr" style="padding:3px 9px"></button></div>
         <p class="hint" id="mailHint" style="margin:4px 0 0"></p></div></div>
       <div class="opt"><i>B</i><div><span id="retB"></span></div></div>
@@ -165,13 +167,13 @@ const TX={
  emlDone:["Datei «{f}» heruntergeladen – öffnen (unten im Browser oder im Ordner Downloads): Outlook zeigt die E-Mail zum Senden.","Fichier « {f} » téléchargé – l’ouvrir (en bas du navigateur ou dans Téléchargements) : Outlook affiche l’e-mail prêt à envoyer."],
  elHow:["«In Outlook öffnen» erstellt eine E-Mail-Datei, die Outlook (klassisch) als neue Nachricht öffnet. Sonst den Text oder nur den Link kopieren.","« Ouvrir dans Outlook » crée un fichier e-mail qu’Outlook (classique) ouvre comme nouveau message. Sinon copier le texte ou seulement le lien."], copied:["Link kopiert.","Lien copié."],
  gateNo:["Bitte verwenden Sie den Link aus der E-Mail der Kirchgemeinde.","Veuillez utiliser le lien reçu par e-mail de la paroisse."], gateOld:["Dieser Link ist abgelaufen ({d}). Bitte wenden Sie sich an das Pfarramt: {m}","Ce lien a expiré ({d}). Veuillez contacter la paroisse : {m}"],
- mail:["E-Mail-Programm öffnen","Ouvrir la messagerie"], share:["PDF senden (mit Anhang)","Envoyer le PDF (avec pièce jointe)"],
+ mail:["Anderes E-Mail-Programm","Autre messagerie"], mailWhich:["Ihre E-Mail wählen – danach das PDF aus dem Ordner «Downloads» anhängen:","Choisissez votre messagerie – puis joignez le PDF depuis le dossier « Téléchargements » :"], mailWhichM:["Oder Ihre E-Mail wählen und das PDF selbst anhängen:","Ou choisissez votre messagerie et joignez le PDF vous-même :"], share:["PDF senden (mit Anhang)","Envoyer le PDF (avec pièce jointe)"],
  retT:["So geben Sie das Formular zurück","Comment rendre le formulaire"],
  retA:["Elektronisch: das PDF an die Kirchgemeinde senden. Die Unterschriften folgen bei der Taufvorbereitung.","Par voie électronique : envoyer le PDF à la paroisse. Les signatures suivront lors de la préparation au baptême."],
  retB:["Auf Papier: das heruntergeladene PDF ausdrucken, von Vater und Mutter unterschreiben lassen und mitbringen oder per Post senden.","Sur papier : imprimer le PDF téléchargé, le faire signer par le père et la mère, l’apporter ou l’envoyer par la poste."],
  retFam:["In beiden Fällen: das Familienbüchlein spätestens am Vorabend der Taufe mitbringen.","Dans les deux cas : apporter le livret de famille au plus tard la veille de la cérémonie."],
  retAdr:["Adresse:","Adresse :"], copyAdr:["kopieren","copier"], adrCopied:["Adresse kopiert.","Adresse copiée."],
- shareNo:["Auf diesem Gerät bitte «E-Mail-Programm öffnen» verwenden und das heruntergeladene PDF anhängen.","Sur cet appareil, utilisez « Ouvrir la messagerie » et joignez le PDF téléchargé."], mailHint:["«PDF senden» öffnet Mail, WhatsApp usw. mit dem PDF als Anhang – Empfänger: wil@fsspx.ch. «E-Mail-Programm öffnen» braucht das PDF als Anhang von Hand (Ordner Downloads).","« Envoyer le PDF » ouvre Mail, WhatsApp, etc. avec le PDF joint – destinataire : wil@fsspx.ch. « Ouvrir la messagerie » demande de joindre le PDF à la main (dossier Téléchargements)."],
+ shareNo:["Auf diesem Gerät bitte «E-Mail-Programm öffnen» verwenden und das heruntergeladene PDF anhängen.","Sur cet appareil, utilisez « Ouvrir la messagerie » et joignez le PDF téléchargé."], mailHint:["Die Adresse ist schon eingetragen. Das heruntergeladene PDF finden Sie im Ordner «Downloads».","L’adresse est déjà indiquée. Le PDF téléchargé se trouve dans le dossier « Téléchargements »."],
  need:["Bitte mindestens Name und Vorname des Kindes eintragen.","Veuillez indiquer au moins le nom et le prénom de l’enfant."]
 };
 let LANG=(()=>{try{return localStorage.getItem("wil-start-lang")==="fr"?"fr":"de";}catch(e){return "de";}})();
@@ -250,6 +252,7 @@ const fname=()=>{ const d=new Date(), iso=d.getFullYear()+"-"+String(d.getMonth(
   const n=[v("k_name"),v("k_vorn")].filter(Boolean).join(" ").replace(/[\\/:*?"<>|]/g,"").trim(); return `${iso} BD01 Anmeldung zur Taufe – ${n||"ohne Name"}.pdf`; };
 function msg(t,c){ const m=$("msg"); m.textContent=t||""; m.className="msg"+(c?" "+c:""); }
 let URLB=null, LAST=null;
+const MOBILE=/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)||(navigator.maxTouchPoints>1&&/Macintosh/.test(navigator.userAgent));
 async function preview(){ try{ const bytes=await build(); if(URLB) URL.revokeObjectURL(URLB); URLB=URL.createObjectURL(new Blob([bytes],{type:"application/pdf"}));
   $("pv").innerHTML=`<iframe title="PDF" src="${URLB}#view=FitH"></iframe>`; msg(L("done"),"ok"); return bytes; }catch(e){ msg(L("err",{e:e.message||e}),"bad"); return null; } }
 const need=()=>{ if(!v("k_name")||!v("k_vorn")){ msg(L("need"),"bad"); return false; } return true; };
@@ -267,7 +270,7 @@ function render(){
   $("hPrev").textContent=L("prev"); $("bPrev").textContent=L("bPrev"); $("bDl").textContent=L("dl"); $("bSave").textContent=L("save"); $("lLock").textContent=L("lock");
   if(!PUBLIC){ $("elT").textContent=L("elT"); $("elH").textContent=L("elH"); $("elBisL").textContent=L("elBis"); $("elSprL").textContent=L("elSpr"); $("elVonL").textContent=L("elVon"); $("bElCopy").textContent=L("elCopy"); $("bElMail").textContent=L("elMail"); $("bElEml").textContent=L("elEml"); $("bElText").textContent=L("elText"); $("elHow").textContent=L("elHow"); }
   if(PUBLIC){ $("retT").textContent=L("retT"); $("retA").textContent=L("retA"); $("retB").textContent=L("retB"); $("retFam").textContent=L("retFam"); $("retAdr").textContent=L("retAdr"); $("bAdr").textContent=L("copyAdr"); $("bShare").textContent=L("share");
-    $("bMail").textContent=L("mail"); $("mailHint").textContent=L("mailHint"); $("tSub").textContent=L("pubSub"); $("priv").textContent=L("pubPriv"); $("bBack").hidden=true; $("bSave").hidden=true; $("lLock").parentElement.hidden=true; $("bDl").textContent=L("pubDl"); $("bDl").classList.add("pri"); $("bPrev").classList.remove("pri"); }
+    $("bMail").textContent=L("mail"); $("mailWhich").textContent=L(MOBILE?"mailWhichM":"mailWhich"); $("bShare").hidden=!MOBILE; $("mailHint").textContent=L("mailHint"); $("tSub").textContent=L("pubSub"); $("priv").textContent=L("pubPriv"); $("bBack").hidden=true; $("bSave").hidden=true; $("lLock").parentElement.hidden=true; $("bDl").textContent=L("pubDl"); $("bDl").classList.add("pri"); $("bPrev").classList.remove("pri"); }
   keep(); $("f").innerHTML=formHTML(); restore();
   if(!$("pv").querySelector("iframe")) $("pv").innerHTML=`<div class="empty" style="white-space:pre-line">${esc(L("pvEmpty"))}</div>`;
 }
@@ -334,9 +337,9 @@ ${a.map(x=>`<p style="${P}margin:0 0 3px;padding-left:14px;text-indent:-14px">�
 <p style="${P}margin:0 0 12px">${esc(T.g)}</p>
 <table role="presentation" cellspacing="0" cellpadding="0" border="0"><tr><td valign="middle" style="padding:0 14px 0 0"><img src="__LOGO__" width="72" height="72" alt="Kirchgemeinde Sancta Maria Wil" style="display:block;width:72px;height:72px;border:0"></td>
 <td valign="middle" style="${P}border-left:2px solid ${R};padding:2px 0 2px 14px"><b>P. Thibaud Favre</b><br><span style="color:${MUT};font-size:14px">${esc(T.kop.replace(" · "," "))}</span></td></tr></table>
-<p style="${F}margin:28px 0 0;font-size:13px;color:${MUT}">PS: ${esc(T.note)}</p>
+<p style="${F}margin:34px 0 0;padding-top:8px;border-top:1px solid #e2d9d6;font-size:12px;font-style:italic;color:#8a8380">${esc(T.note)}</p>
 </td></tr></table>`;
-  const body=`${T.a}\n\n${T.p1}\n\n${T.p2}\n${u}\n\n${T.ch}:\n\nA) ${T.o1t}\n${T.o1.map(x=>"– "+x).join("\n")}\n\nB) ${T.o2t}\n${T.o2.map(x=>"– "+x).join("\n")}\n\n${T.fam}\n\n${T.q}\n\n${T.g}\nP. Thibaud Favre\n${T.kop.replace(" · "," ")}\n\nPS: ${T.note}`;
+  const body=`${T.a}\n\n${T.p1}\n\n${T.p2}\n${u}\n\n${T.ch}:\n\nA) ${T.o1t}\n${T.o1.map(x=>"– "+x).join("\n")}\n\nB) ${T.o2t}\n${T.o2.map(x=>"– "+x).join("\n")}\n\n${T.fam}\n\n${T.q}\n\n${T.g}\nP. Thibaud Favre\n${T.kop.replace(" · "," ")}\n\n—\n${T.note}`;
   return {sub,body,html:html.replace("__LOGO__","data:image/png;base64,"+LOGO_B64),htmlCid:html.replace("__LOGO__","cid:wil-logo"),to:ELTERN_MAIL.filter(Boolean).join("; ")}; }
 function elMailHref(){ const {sub,body,to}=elMailParts(); return "mailto:"+encodeURIComponent(to).replace(/%40/g,"@").replace(/%3B%20/g,";")+"?subject="+encodeURIComponent(sub)+"&body="+encodeURIComponent(body); }
 const b64utf8=t=>{ const u=new TextEncoder().encode(t); let s=""; for(let i=0;i<u.length;i++) s+=String.fromCharCode(u[i]); return btoa(s); };
@@ -360,6 +363,9 @@ if(PUBLIC){ const h=new URLSearchParams(location.search.length>1?location.search
     const file=new File([LAST.bytes],LAST.n,{type:"application/pdf"}); const data={files:[file],title:"Anmeldung zur Taufe – "+n,text:(LANG==="fr"?"Demande de baptême – à envoyer à ":"Anmeldung zur Taufe – bitte senden an ")+RETOUR};
     try{ if(navigator.canShare&&navigator.canShare({files:[file]})){ await navigator.share(data); } else msg(L("shareNo"),"bad"); }catch(e){ if(e&&e.name!=="AbortError") msg(L("shareNo"),"bad"); } };
   $("bAdr").onclick=async()=>{ try{ await navigator.clipboard.writeText(RETOUR); msg(L("adrCopied"),"ok"); }catch(e){} };
+  const retSub=()=>"Anmeldung zur Taufe – "+[v("k_name"),v("k_vorn")].filter(Boolean).join(" "), retBody=()=>LANG==="fr"?"Bonjour,\n\nVeuillez trouver en pièce jointe la demande de baptême.\n\n":"Grüss Gott\n\nIm Anhang die Anmeldung zur Taufe.\n\n";
+  $("bGmail").onclick=()=>{ $("bGmail").href="https://mail.google.com/mail/?view=cm&fs=1&to="+encodeURIComponent(RETOUR)+"&su="+encodeURIComponent(retSub())+"&body="+encodeURIComponent(retBody()); };
+  $("bOutl").onclick=()=>{ $("bOutl").href="https://outlook.live.com/mail/0/deeplink/compose?to="+encodeURIComponent(RETOUR)+"&subject="+encodeURIComponent(retSub())+"&body="+encodeURIComponent(retBody()); };
   $("bMail").onclick=()=>{ const n=[v("k_name"),v("k_vorn")].filter(Boolean).join(" "); $("bMail").href="mailto:"+RETOUR+"?subject="+encodeURIComponent("Anmeldung zur Taufe – "+n)+"&body="+encodeURIComponent(LANG==="fr"?"Bonjour,\n\nVeuillez trouver en pièce jointe la demande de baptême.\n\n":"Grüss Gott\n\nIm Anhang die Anmeldung zur Taufe.\n\n"); };
 }
 /* Übernahme aus dem Liber Status Animarum: LSA im Auswahlmodus öffnen, Antwort per postMessage (nichts wird gespeichert) */
