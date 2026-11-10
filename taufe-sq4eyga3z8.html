@@ -58,6 +58,9 @@ input:focus,select:focus{outline:2px solid var(--accent);outline-offset:0}
 .prev{position:sticky;top:12px}
 .prev iframe{width:100%;height:calc(100vh - 140px);min-height:520px;border:1px solid var(--line);border-radius:8px;background:#fff}
 .empty{display:grid;place-items:center;height:420px;border:1px dashed var(--field-bd);border-radius:8px;color:var(--muted);text-align:center;padding:20px}
+.ret{border:2px solid var(--accent);border-radius:12px;padding:12px 14px;margin:0 0 12px;background:var(--paper)}.ret>b{display:block;font:400 19px var(--serif);margin-bottom:8px}
+.ret .opt{display:flex;gap:10px;padding:8px 0;border-top:1px solid var(--line)}.ret .opt i{font-style:normal;font-weight:700;color:var(--accent-ink);background:var(--accent);border-radius:999px;min-width:24px;height:24px;display:grid;place-items:center;font-size:13px}
+.ret .adr{margin-top:6px;font-size:13px}.ret code{font-size:14px}
 body.embed{padding-top:6px}body.embed header .org b{display:none}body.embed h1{font-size:22px}
 .priv{border-left:4px solid var(--accent);background:var(--tint);padding:8px 12px;border-radius:8px;font-size:12.5px}
 </style>
@@ -81,10 +84,18 @@ body.embed{padding-top:6px}body.embed header .org b{display:none}body.embed h1{f
       <label class="chk"><input type="checkbox" id="lock"><span id="lLock"></span></label>
     </div>
     <p class="msg" id="msg"></p>
-    <div class="actions" id="pubMail" hidden style="margin-bottom:10px"><a class="btn pri" id="bMail" href="#"></a><span class="hint" id="mailHint"></span></div>
+    <div class="ret" id="pubMail" hidden>
+      <b id="retT"></b>
+      <div class="opt"><i>A</i><div><span id="retA"></span>
+        <div class="actions" style="margin-top:6px"><button type="button" class="btn pri" id="bShare"></button><a class="btn" id="bMail" href="#"></a></div>
+        <div class="adr"><span id="retAdr"></span> <code>wil@fsspx.ch</code> <button type="button" class="btn" id="bAdr" style="padding:3px 9px"></button></div>
+        <p class="hint" id="mailHint" style="margin:4px 0 0"></p></div></div>
+      <div class="opt"><i>B</i><div><span id="retB"></span></div></div>
+      <p class="hint" id="retFam" style="margin:6px 0 0;font-weight:600"></p>
+    </div>
     <div class="sub" id="eltern" hidden style="margin-bottom:12px">
       <b id="elT"></b><p class="hint" id="elH" style="margin:0 0 8px"></p>
-      <div class="g"><label><span id="elBisL"></span><input id="elBis" type="date"></label><label><span id="elSprL"></span><select id="elSpr"><option value="de">Deutsch</option><option value="fr">Français</option></select></label></div>
+      <div class="g"><label><span id="elBisL"></span><input id="elBis" type="date"></label><label><span id="elSprL"></span><select id="elSpr"><option value="de">Deutsch</option><option value="fr">Français</option></select></label><label><span id="elVonL"></span><select id="elVon"><option value="Kirchgemeinde Sancta Maria Wil <wil@fsspx.ch>">wil@fsspx.ch</option><option value="P. Thibaud Favre <t.favre@fsspx.email>">t.favre@fsspx.email</option></select></label></div>
       <div class="actions" style="margin-top:8px"><button type="button" class="btn pri" id="bElEml"></button><button type="button" class="btn" id="bElText"></button><button type="button" class="btn" id="bElCopy"></button><a class="btn" id="bElMail" href="#"></a></div>
       <p class="hint" id="elHow" style="margin:6px 0 0"></p>
       <input id="elUrl" readonly hidden style="margin-top:8px;font-size:12px">
@@ -146,14 +157,20 @@ const TX={
  err:["Fehler beim Ausfüllen: {e}","Erreur lors du remplissage : {e}"], lsa:["Aus dem Liber Status Animarum","Depuis le Liber Status Animarum"], lsaKind:["Kind wählen (füllt Eltern, Adresse, Trauung)","Choisir l’enfant (remplit parents, adresse, mariage)"], lsaP:["Person wählen","Choisir la personne"],
  lsaOk:["Übernommen aus dem Liber Status Animarum: {n}","Repris du Liber Status Animarum : {n}"], lsaWait:["Liber Status Animarum geöffnet – dort entsperren, die Person öffnen und «Ins Formular übernehmen» klicken.","Liber Status Animarum ouvert – le déverrouiller, ouvrir la personne et cliquer « Reprendre dans le formulaire »."], lsaBlock:["Das Fenster wurde blockiert – bitte Pop-ups für diese Seite erlauben.","La fenêtre a été bloquée – autorisez les fenêtres pour cette page."],
  pubSub:["Kirchgemeinde Sancta Maria Wil – bitte ausfüllen; am Schluss entsteht das offizielle Formular als PDF","Kirchgemeinde Sancta Maria Wil – à remplir ; à la fin, le formulaire officiel est créé en PDF"],
- pubPriv:["Ihre Angaben werden nirgends hin gesendet: das PDF entsteht nur auf Ihrem Gerät. Danach ausdrucken, von Vater und Mutter unterschreiben lassen und mit dem Familienbüchlein mitbringen – oder per E-Mail an wil@fsspx.ch senden.","Vos données ne sont envoyées nulle part : le PDF est créé seulement sur votre appareil. Ensuite l’imprimer, le faire signer par le père et la mère et l’apporter avec le livret de famille – ou l’envoyer par e-mail à wil@fsspx.ch."],
- pubDl:["Fertig – PDF erstellen","Terminé – créer le PDF"], pubDone:["Das PDF wurde heruntergeladen: «{f}». Bitte ausdrucken und unterschreiben.","Le PDF a été téléchargé : « {f} ». Veuillez l’imprimer et le signer."],
+ pubPriv:["Ihre Angaben werden nirgends hin gesendet: das PDF entsteht nur auf Ihrem Gerät. Danach zwei Möglichkeiten – A) elektronisch: das PDF per E-Mail an wil@fsspx.ch senden (die Unterschriften folgen bei der Taufvorbereitung); B) auf Papier: ausdrucken, von Vater und Mutter unterschreiben lassen und mitbringen. In beiden Fällen das Familienbüchlein mitbringen.","Vos données ne sont envoyées nulle part : le PDF est créé seulement sur votre appareil. Ensuite deux possibilités – A) électronique : envoyer le PDF par e-mail à wil@fsspx.ch (les signatures suivront lors de la préparation au baptême) ; B) papier : l’imprimer, le faire signer par le père et la mère et l’apporter. Dans les deux cas, apporter le livret de famille."],
+ pubDl:["Fertig – PDF erstellen","Terminé – créer le PDF"], pubDone:["Das PDF wurde heruntergeladen: «{f}». Jetzt entweder per E-Mail zurücksenden (Knopf unten) oder ausdrucken und von beiden Eltern unterschreiben lassen.","Le PDF a été téléchargé : « {f} ». Maintenant, soit le renvoyer par e-mail (bouton ci-dessous), soit l’imprimer et le faire signer par les deux parents."],
  elT:["An die Eltern senden","Envoyer aux parents"], elH:["Die Eltern bekommen einen Link (gültig bis zum gewählten Datum). Sie füllen auf ihrem Gerät aus, laden das PDF herunter, unterschreiben und bringen es mit oder senden es zurück. Ihre Angaben gehen nirgends hin.","Les parents reçoivent un lien (valable jusqu’à la date choisie). Ils remplissent sur leur appareil, téléchargent le PDF, signent et l’apportent ou le renvoient. Leurs données ne vont nulle part."],
- elBis:["Link gültig bis","Lien valable jusqu’au"], elSpr:["Sprache der E-Mail","Langue de l’e-mail"], elCopy:["Link kopieren","Copier le lien"], elMail:["Anderes E-Mail-Programm","Autre messagerie"], elEml:["In Outlook öffnen","Ouvrir dans Outlook"], elText:["E-Mail-Text kopieren","Copier le texte de l’e-mail"], textCopied:["E-Mail kopiert (mit Knopf) – in eine neue E-Mail einfügen; Betreff selbst eintragen.","E-mail copié (avec bouton) – à coller dans un nouvel e-mail ; ajouter l’objet."],
+ elBis:["Link gültig bis","Lien valable jusqu’au"], elSpr:["Sprache der E-Mail","Langue de l’e-mail"], elVon:["Absender","Expéditeur"], elCopy:["Link kopieren","Copier le lien"], elMail:["Anderes E-Mail-Programm","Autre messagerie"], elEml:["In Outlook öffnen","Ouvrir dans Outlook"], elText:["E-Mail-Text kopieren","Copier le texte de l’e-mail"], textCopied:["E-Mail kopiert (mit Knopf) – in eine neue E-Mail einfügen; Betreff selbst eintragen.","E-mail copié (avec bouton) – à coller dans un nouvel e-mail ; ajouter l’objet."],
  emlDone:["Datei «{f}» heruntergeladen – öffnen (unten im Browser oder im Ordner Downloads): Outlook zeigt die E-Mail zum Senden.","Fichier « {f} » téléchargé – l’ouvrir (en bas du navigateur ou dans Téléchargements) : Outlook affiche l’e-mail prêt à envoyer."],
  elHow:["«In Outlook öffnen» erstellt eine E-Mail-Datei, die Outlook (klassisch) als neue Nachricht öffnet. Sonst den Text oder nur den Link kopieren.","« Ouvrir dans Outlook » crée un fichier e-mail qu’Outlook (classique) ouvre comme nouveau message. Sinon copier le texte ou seulement le lien."], copied:["Link kopiert.","Lien copié."],
  gateNo:["Bitte verwenden Sie den Link aus der E-Mail der Kirchgemeinde.","Veuillez utiliser le lien reçu par e-mail de la paroisse."], gateOld:["Dieser Link ist abgelaufen ({d}). Bitte wenden Sie sich an das Pfarramt: {m}","Ce lien a expiré ({d}). Veuillez contacter la paroisse : {m}"],
- mail:["PDF per E-Mail zurücksenden","Renvoyer le PDF par e-mail"], mailHint:["Ihr E-Mail-Programm öffnet sich – bitte das heruntergeladene PDF anhängen. Falls sich nichts öffnet: das PDF selbst an wil@fsspx.ch senden.","Votre messagerie s’ouvre – veuillez joindre le PDF téléchargé. Si rien ne s’ouvre : envoyez vous-même le PDF à wil@fsspx.ch."],
+ mail:["E-Mail-Programm öffnen","Ouvrir la messagerie"], share:["PDF senden (mit Anhang)","Envoyer le PDF (avec pièce jointe)"],
+ retT:["So geben Sie das Formular zurück","Comment rendre le formulaire"],
+ retA:["Elektronisch: das PDF an die Kirchgemeinde senden. Die Unterschriften folgen bei der Taufvorbereitung.","Par voie électronique : envoyer le PDF à la paroisse. Les signatures suivront lors de la préparation au baptême."],
+ retB:["Auf Papier: das heruntergeladene PDF ausdrucken, von Vater und Mutter unterschreiben lassen und mitbringen oder per Post senden.","Sur papier : imprimer le PDF téléchargé, le faire signer par le père et la mère, l’apporter ou l’envoyer par la poste."],
+ retFam:["In beiden Fällen: das Familienbüchlein spätestens am Vorabend der Taufe mitbringen.","Dans les deux cas : apporter le livret de famille au plus tard la veille de la cérémonie."],
+ retAdr:["Adresse:","Adresse :"], copyAdr:["kopieren","copier"], adrCopied:["Adresse kopiert.","Adresse copiée."],
+ shareNo:["Auf diesem Gerät bitte «E-Mail-Programm öffnen» verwenden und das heruntergeladene PDF anhängen.","Sur cet appareil, utilisez « Ouvrir la messagerie » et joignez le PDF téléchargé."], mailHint:["«PDF senden» öffnet Mail, WhatsApp usw. mit dem PDF als Anhang – Empfänger: wil@fsspx.ch. «E-Mail-Programm öffnen» braucht das PDF als Anhang von Hand (Ordner Downloads).","« Envoyer le PDF » ouvre Mail, WhatsApp, etc. avec le PDF joint – destinataire : wil@fsspx.ch. « Ouvrir la messagerie » demande de joindre le PDF à la main (dossier Téléchargements)."],
  need:["Bitte mindestens Name und Vorname des Kindes eintragen.","Veuillez indiquer au moins le nom et le prénom de l’enfant."]
 };
 let LANG=(()=>{try{return localStorage.getItem("wil-start-lang")==="fr"?"fr":"de";}catch(e){return "de";}})();
@@ -231,7 +248,7 @@ async function build(){
 const fname=()=>{ const d=new Date(), iso=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
   const n=[v("k_name"),v("k_vorn")].filter(Boolean).join(" ").replace(/[\\/:*?"<>|]/g,"").trim(); return `${iso} BD01 Anmeldung zur Taufe – ${n||"ohne Name"}.pdf`; };
 function msg(t,c){ const m=$("msg"); m.textContent=t||""; m.className="msg"+(c?" "+c:""); }
-let URLB=null;
+let URLB=null, LAST=null;
 async function preview(){ try{ const bytes=await build(); if(URLB) URL.revokeObjectURL(URLB); URLB=URL.createObjectURL(new Blob([bytes],{type:"application/pdf"}));
   $("pv").innerHTML=`<iframe title="PDF" src="${URLB}#view=FitH"></iframe>`; msg(L("done"),"ok"); return bytes; }catch(e){ msg(L("err",{e:e.message||e}),"bad"); return null; } }
 const need=()=>{ if(!v("k_name")||!v("k_vorn")){ msg(L("need"),"bad"); return false; } return true; };
@@ -247,15 +264,16 @@ function render(){
   document.documentElement.lang=LANG; document.querySelectorAll("[data-lang]").forEach(b=>b.classList.toggle("on",b.dataset.lang===LANG));
   $("tTitle").textContent=L("title"); $("tSub").textContent=L("sub"); $("bBack").textContent=L("back"); $("priv").textContent=L("priv");
   $("hPrev").textContent=L("prev"); $("bPrev").textContent=L("bPrev"); $("bDl").textContent=L("dl"); $("bSave").textContent=L("save"); $("lLock").textContent=L("lock");
-  if(!PUBLIC){ $("elT").textContent=L("elT"); $("elH").textContent=L("elH"); $("elBisL").textContent=L("elBis"); $("elSprL").textContent=L("elSpr"); $("bElCopy").textContent=L("elCopy"); $("bElMail").textContent=L("elMail"); $("bElEml").textContent=L("elEml"); $("bElText").textContent=L("elText"); $("elHow").textContent=L("elHow"); }
-  if(PUBLIC){ $("bMail").textContent=L("mail"); $("mailHint").textContent=L("mailHint"); $("tSub").textContent=L("pubSub"); $("priv").textContent=L("pubPriv"); $("bBack").hidden=true; $("bSave").hidden=true; $("lLock").parentElement.hidden=true; $("bDl").textContent=L("pubDl"); $("bDl").classList.add("pri"); $("bPrev").classList.remove("pri"); }
+  if(!PUBLIC){ $("elT").textContent=L("elT"); $("elH").textContent=L("elH"); $("elBisL").textContent=L("elBis"); $("elSprL").textContent=L("elSpr"); $("elVonL").textContent=L("elVon"); $("bElCopy").textContent=L("elCopy"); $("bElMail").textContent=L("elMail"); $("bElEml").textContent=L("elEml"); $("bElText").textContent=L("elText"); $("elHow").textContent=L("elHow"); }
+  if(PUBLIC){ $("retT").textContent=L("retT"); $("retA").textContent=L("retA"); $("retB").textContent=L("retB"); $("retFam").textContent=L("retFam"); $("retAdr").textContent=L("retAdr"); $("bAdr").textContent=L("copyAdr"); $("bShare").textContent=L("share");
+    $("bMail").textContent=L("mail"); $("mailHint").textContent=L("mailHint"); $("tSub").textContent=L("pubSub"); $("priv").textContent=L("pubPriv"); $("bBack").hidden=true; $("bSave").hidden=true; $("lLock").parentElement.hidden=true; $("bDl").textContent=L("pubDl"); $("bDl").classList.add("pri"); $("bPrev").classList.remove("pri"); }
   keep(); $("f").innerHTML=formHTML(); restore();
   if(!$("pv").querySelector("iframe")) $("pv").innerHTML=`<div class="empty" style="white-space:pre-line">${esc(L("pvEmpty"))}</div>`;
 }
 document.addEventListener("change",e=>{ if(/_bek$/.test(e.target.id)) toggleQs(); });
 document.querySelectorAll("[data-lang]").forEach(b=>b.onclick=()=>{ LANG=b.dataset.lang; try{localStorage.setItem("wil-start-lang",LANG);}catch(e){} render(); });
 $("bPrev").onclick=()=>preview();
-$("bDl").onclick=async()=>{ if(!need()) return; const bytes=await preview(); if(!bytes) return; const n=PUBLIC?fname().replace(/^\d{4}-\d{2}-\d{2} /,""):fname(); const a=document.createElement("a"); a.href=URLB; a.download=n; document.body.appendChild(a); a.click(); a.remove(); if(PUBLIC){ msg(L("pubDone",{f:n}),"ok"); $("pubMail").hidden=false; } };
+$("bDl").onclick=async()=>{ if(!need()) return; const bytes=await preview(); if(!bytes) return; const n=PUBLIC?fname().replace(/^\d{4}-\d{2}-\d{2} /,""):fname(); const a=document.createElement("a"); a.href=URLB; a.download=n; document.body.appendChild(a); a.click(); a.remove(); if(PUBLIC){ msg(L("pubDone",{f:n}),"ok"); LAST={bytes,n}; $("pubMail").hidden=false; $("pubMail").scrollIntoView({behavior:"smooth",block:"center"}); } };
 $("bSave").onclick=async()=>{ if(!need()) return; const bytes=await preview(); if(!bytes) return; const d=await dir(); if(!d){ msg(L("noDir"),"bad"); return; }
   try{ const f1=await d.getDirectoryHandle("Formulare",{create:true}), f2=await f1.getDirectoryHandle("Ausgefüllt",{create:true}); const n=fname();
     const fh=await f2.getFileHandle(n,{create:true}); const w=await fh.createWritable(); await w.write(bytes); await w.close(); msg(L("saved",{f:"Formulare › Ausgefüllt › "+n}),"ok"); }
@@ -271,49 +289,60 @@ function anrede(fr){ const sp=x=>{ const t=String(x||"").trim().split(/\s+/); re
   if(fr){ if(vn&&mn) return vn===mn?`Chère Madame ${mn}, cher Monsieur ${vn},`:`Chère Madame ${mn}, cher Monsieur ${vn},`; if(mn) return `Chère Madame ${mn},`; if(vn) return `Cher Monsieur ${vn},`; return "Chers parents,"; }
   if(vn&&mn) return `Sehr geehrte Frau ${mn}, sehr geehrter Herr ${vn}`; if(mn) return `Sehr geehrte Frau ${mn}`; if(vn) return `Sehr geehrter Herr ${vn}`; return "Liebe Eltern"; }
 function elMailParts(){ const fr=$("elSpr").value==="fr", u=elUrl(), bis=dmy($("elBis").value), kind=v("k_vorn").split(/\s+/)[0]||"", td=dmy(v("t_dat")), tz=v("t_zeit");
-  const sub=fr?(kind?`Baptême de ${kind} – formulaire d’inscription`:"Baptême – formulaire d’inscription"):(kind?`Taufe von ${kind} – Anmeldeformular`:"Taufe – Anmeldeformular");
+  const wann=td?(fr?` le ${td}${tz?" à "+tz:""}`:` am ${td}${tz?" um "+tz+" Uhr":""}`):"";
+  const sub=fr?(kind?`Baptême de ${kind} – demande de baptême`:"Demande de baptême"):(kind?`Taufe von ${kind} – Anmeldung zur Taufe`:"Anmeldung zur Taufe");
   const T=fr?{
-    a:anrede(fr),
-    p1:`Bientôt, votre famille vivra une grande joie : le baptême ${kind?"de "+kind:"de votre enfant"}${td?` (prévu le ${td}${tz?" à "+tz:""})`:""}. Par ce sacrement, votre enfant deviendra enfant de Dieu et membre de l’Église. Nous nous en réjouissons avec vous.`,
-    p2:"Pour que tout soit bien préparé et que l’inscription au registre des baptêmes soit exacte, nous vous prions de remplir la demande de baptême officielle :",
-    btn:"Ouvrir et remplir le formulaire",
-    st:"Comment faire",
-    steps:["Cliquez sur le bouton ci-dessus. Le formulaire s’ouvre dans votre navigateur (ordinateur, tablette ou Natel).","Remplissez les indications sur l’enfant, les parents, le parrain et la marraine.","Cliquez sur « Terminé – créer le PDF ». Le formulaire officiel est enregistré sur votre appareil.","Imprimez-le : <b>le père et la mère doivent tous deux le signer</b>.","Apportez-le avec le <b>livret de famille</b> au plus tard la veille du baptême – ou envoyez-le à "+RETOUR+"."],
-    note:`Le lien est valable jusqu’au ${bis}. Vos données ne sont envoyées nulle part : elles restent sur votre appareil.`,
-    q:"Pour toute question, je reste volontiers à votre disposition.",
-    g:"Avec mes salutations et ma bénédiction,", alt:"Si le bouton ne fonctionne pas, copiez ce lien dans votre navigateur :"
+    kop:"Paroisse Sancta Maria · Wil", tit:"Demande de baptême", a:anrede(true),
+    p1:`Nous nous réjouissons avec vous : ${kind?kind+" recevra":"votre enfant recevra"} bientôt le saint baptême${wann}. Par ce sacrement, ${kind||"il"} deviendra enfant de Dieu et membre de l’Église.`,
+    p2:"Pour bien préparer la cérémonie et inscrire correctement le baptême dans le registre, nous vous prions de remplir la demande de baptême officielle. Cela ne prend que quelques minutes.",
+    btn:"Remplir la demande de baptême",
+    ch:"Ensuite, deux possibilités au choix",
+    o1t:"Tout par voie électronique", o1:["Remplissez le formulaire et cliquez sur « Terminé – créer le PDF ».","Renvoyez le PDF par e-mail à "+RETOUR+" (un bouton vous y aide).","Les deux parents signeront lors de la préparation au baptême."],
+    o2t:"Sur papier", o2:["Remplissez le formulaire et cliquez sur « Terminé – créer le PDF ».","Imprimez-le ; le père et la mère le signent tous deux.","Apportez-le, ou envoyez-le par la poste."],
+    fam:"Dans les deux cas, merci d’apporter le livret de famille au plus tard la veille du baptême.",
+    note:`Le formulaire est accessible jusqu’au ${bis}. Vos données ne sont transmises nulle part : elles restent sur votre appareil.`,
+    q:"Pour toute question, je reste volontiers à votre disposition.", g:"Avec mes salutations et ma bénédiction,"
   }:{
-    a:anrede(fr),
-    p1:`In Ihrer Familie steht bald ein grosses Ereignis bevor: die Taufe ${kind?"von "+kind:"Ihres Kindes"}${td?` (vorgesehen am ${td}${tz?" um "+tz+" Uhr":""})`:""}. Durch dieses Sakrament wird Ihr Kind ein Kind Gottes und Glied der Kirche. Wir freuen uns mit Ihnen.`,
-    p2:"Damit alles gut vorbereitet ist und der Eintrag ins Taufregister genau stimmt, bitten wir Sie, die offizielle Anmeldung zur Taufe auszufüllen:",
-    btn:"Formular öffnen und ausfüllen",
-    st:"So gehen Sie vor",
-    steps:["Klicken Sie auf den Knopf oben. Das Formular öffnet sich im Browser (Computer, Tablet oder Handy).","Füllen Sie die Angaben zum Kind, zu den Eltern sowie zu Pate und Patin aus.","Klicken Sie auf «Fertig – PDF erstellen». Das offizielle Formular wird auf Ihrem Gerät gespeichert.","Drucken Sie es aus: <b>Vater und Mutter müssen beide unterschreiben</b>.","Bringen Sie es mit dem <b>Familienbüchlein</b> spätestens am Vorabend der Taufe mit – oder senden Sie es an "+RETOUR+"."],
-    note:`Der Link ist gültig bis ${bis}. Ihre Angaben werden nirgends hin gesendet; sie bleiben auf Ihrem Gerät.`,
-    q:"Für Fragen stehe ich Ihnen gerne zur Verfügung.",
-    g:"Mit freundlichen Grüssen und priesterlichem Segen", alt:"Falls der Knopf nicht funktioniert, kopieren Sie diesen Link in Ihren Browser:"
+    kop:"Kirchgemeinde Sancta Maria · Wil", tit:"Anmeldung zur Taufe", a:anrede(false)+",",
+    p1:`Wir freuen uns mit Ihnen: ${kind?kind+" empfängt":"Ihr Kind empfängt"} bald die heilige Taufe${wann}. Durch dieses Sakrament wird ${kind||"es"} ein Kind Gottes und Glied der Kirche.`,
+    p2:"Damit die Feier gut vorbereitet und die Taufe richtig ins Taufregister eingetragen werden kann, bitten wir Sie, die offizielle Anmeldung zur Taufe auszufüllen. Das dauert nur wenige Minuten.",
+    btn:"Anmeldung zur Taufe ausfüllen",
+    ch:"Danach haben Sie zwei Möglichkeiten",
+    o1t:"Alles elektronisch", o1:["Formular ausfüllen und auf «Fertig – PDF erstellen» klicken.","Das PDF per E-Mail an "+RETOUR+" zurücksenden (ein Knopf hilft dabei).","Beide Eltern unterschreiben dann bei der Taufvorbereitung."],
+    o2t:"Auf Papier", o2:["Formular ausfüllen und auf «Fertig – PDF erstellen» klicken.","Ausdrucken; Vater und Mutter unterschreiben beide.","Mitbringen oder per Post senden."],
+    fam:"In beiden Fällen bitte das Familienbüchlein spätestens am Vorabend der Taufe mitbringen.",
+    note:`Das Formular ist bis ${bis} erreichbar. Ihre Angaben werden nirgends hin gesendet; sie bleiben auf Ihrem Gerät.`,
+    q:"Für Fragen stehe ich Ihnen gerne zur Verfügung.", g:"Mit freundlichen Grüssen und priesterlichem Segen"
   };
-  const sig="P. Thibaud Favre<br>Kirchgemeinde Sancta Maria Wil";
-  const R="#7a1f2b", F="font-family:Calibri,'Segoe UI',Arial,sans-serif;";
-  const html=`<div style="${F}font-size:15px;line-height:1.5;color:#24201f;max-width:620px">
-<p style="margin:0 0 14px">${esc(T.a)}${fr?"":","}</p>
-<p style="margin:0 0 14px">${esc(T.p1)}</p>
-<p style="margin:0 0 18px">${esc(T.p2)}</p>
-<table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 22px"><tr><td style="background:${R};border-radius:8px;padding:12px 24px"><a href="${u}" style="${F}color:#ffffff;font-size:16px;font-weight:bold;text-decoration:none;display:inline-block">${esc(T.btn)} &rarr;</a></td></tr></table>
-<p style="margin:0 0 6px;color:${R};font-weight:bold;letter-spacing:.04em;text-transform:uppercase;font-size:13px">${esc(T.st)}</p>
-<table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 16px">${T.steps.map((x,i)=>`<tr><td valign="top" style="${F}font-size:15px;color:${R};font-weight:bold;padding:3px 10px 3px 0">${i+1}.</td><td style="${F}font-size:15px;padding:3px 0">${x}</td></tr>`).join("")}</table>
-<p style="margin:0 0 14px;font-size:13px;color:#665d5a">${esc(T.note)}</p>
-<p style="margin:0 0 14px">${esc(T.q)}</p>
-<p style="margin:0 0 4px">${esc(T.g)}</p>
-<p style="margin:0">${sig}</p></div>`;
-  const strip=x=>String(x).replace(/<[^>]+>/g,"");
-  const body=`${T.a}${fr?"":","}\n\n${T.p1}\n\n${T.p2}\n${u}\n\n${T.st}:\n${T.steps.map((x,i)=>(i+1)+". "+strip(x)).join("\n")}\n\n${T.note}\n\n${T.q}\n\n${T.g}\nP. Thibaud Favre\nKirchgemeinde Sancta Maria Wil`;
+  const R="#7a1f2b", TINT="#f6efee", MUT="#6b625f", F="font-family:Calibri,'Segoe UI',Arial,sans-serif;", P=`${F}font-size:15px;line-height:1.55;color:#24201f;`;
+  const opt=(t,a,n)=>`<tr><td style="padding:0 0 10px"><table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background:${TINT};border-left:4px solid ${R};border-radius:6px"><tr><td style="padding:12px 16px">
+<p style="${F}margin:0 0 6px;font-size:15px;font-weight:bold;color:${R}">${n}&nbsp;&nbsp;${esc(t)}</p>
+${a.map(x=>`<p style="${P}margin:0 0 3px;padding-left:14px;text-indent:-14px">–&nbsp;${esc(x)}</p>`).join("")}</td></tr></table></td></tr>`;
+  const html=`<table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="max-width:600px"><tr><td style="${P}">
+<p style="${F}margin:0 0 2px;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:${R};font-weight:bold">${esc(T.kop)}</p>
+<p style="${F}margin:0 0 16px;font-size:22px;color:#24201f;border-bottom:2px solid ${R};padding-bottom:8px">${esc(T.tit)}</p>
+<p style="${P}margin:0 0 12px">${esc(T.a)}</p>
+<p style="${P}margin:0 0 12px">${esc(T.p1)}</p>
+<p style="${P}margin:0 0 18px">${esc(T.p2)}</p>
+<table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin:4px 0 24px"><tr><td align="center" bgcolor="${R}" style="background:${R};border-radius:6px;mso-padding-alt:14px 30px">
+<!--[if mso]><v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="${u}" style="height:48px;v-text-anchor:middle;width:330px" arcsize="12%" stroke="f" fillcolor="${R}"><w:anchorlock/><center style="color:#ffffff;font-family:Calibri,Arial,sans-serif;font-size:17px;font-weight:bold">${esc(T.btn)}</center></v:roundrect><![endif]-->
+<!--[if !mso]><!--><a href="${u}" style="display:inline-block;padding:14px 30px;${F}font-size:17px;font-weight:bold;line-height:20px;color:#ffffff;text-decoration:none;border-radius:6px;background:${R};border:1px solid ${R}">${esc(T.btn)}</a><!--<![endif]-->
+</td></tr></table>
+<p style="${F}margin:0 0 10px;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:${MUT};font-weight:bold">${esc(T.ch)}</p>
+<table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">${opt(T.o1t,T.o1,"A")}${opt(T.o2t,T.o2,"B")}</table>
+<p style="${P}margin:6px 0 14px"><b>${esc(T.fam)}</b></p>
+<p style="${F}margin:0 0 16px;font-size:13px;color:${MUT}">${esc(T.note)}</p>
+<p style="${P}margin:0 0 14px">${esc(T.q)}</p>
+<p style="${P}margin:0 0 2px">${esc(T.g)}</p>
+<p style="${P}margin:0"><b>P. Thibaud Favre</b><br><span style="color:${MUT}">${esc(T.kop.replace(" · "," "))}</span></p>
+</td></tr></table>`;
+  const body=`${T.a}\n\n${T.p1}\n\n${T.p2}\n${u}\n\n${T.ch}:\n\nA) ${T.o1t}\n${T.o1.map(x=>"– "+x).join("\n")}\n\nB) ${T.o2t}\n${T.o2.map(x=>"– "+x).join("\n")}\n\n${T.fam}\n\n${T.note}\n\n${T.q}\n\n${T.g}\nP. Thibaud Favre\n${T.kop.replace(" · "," ")}`;
   return {sub,body,html,to:ELTERN_MAIL.filter(Boolean).join("; ")}; }
 function elMailHref(){ const {sub,body,to}=elMailParts(); return "mailto:"+encodeURIComponent(to).replace(/%40/g,"@").replace(/%3B%20/g,";")+"?subject="+encodeURIComponent(sub)+"&body="+encodeURIComponent(body); }
 const b64utf8=t=>{ const u=new TextEncoder().encode(t); let s=""; for(let i=0;i<u.length;i++) s+=String.fromCharCode(u[i]); return btoa(s); };
 function elEml(){ const {sub,body,html,to}=elMailParts(); const B="=_wil_"+Date.now(), w=t=>b64utf8(t.replace(/\r?\n/g,"\r\n")).replace(/.{76}/g,"$&\r\n");
-  const doc="<!DOCTYPE html><html><head><meta charset=\"utf-8\"></head><body>"+html+"</body></html>";
-  const eml=["To: "+to,"Subject: =?UTF-8?B?"+b64utf8(sub)+"?=","X-Unsent: 1","MIME-Version: 1.0","Content-Type: multipart/alternative; boundary=\""+B+"\"","","--"+B,"Content-Type: text/plain; charset=UTF-8","Content-Transfer-Encoding: base64","",w(body),"--"+B,"Content-Type: text/html; charset=UTF-8","Content-Transfer-Encoding: base64","",w(doc),"--"+B+"--",""].join("\r\n");
+  const doc="<!DOCTYPE html><html xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:o=\"urn:schemas-microsoft-com:office:office\"><head><meta charset=\"utf-8\"></head><body style=\"margin:0;padding:16px\">"+html+"</body></html>";
+  const eml=["From: "+$("elVon").value.replace(/^([^<]+)</,(m,n)=>"=?UTF-8?B?"+b64utf8(n.trim())+"?= <"),"To: "+to,"Subject: =?UTF-8?B?"+b64utf8(sub)+"?=","X-Unsent: 1","MIME-Version: 1.0","Content-Type: multipart/alternative; boundary=\""+B+"\"","","--"+B,"Content-Type: text/plain; charset=UTF-8","Content-Transfer-Encoding: base64","",w(body),"--"+B,"Content-Type: text/html; charset=UTF-8","Content-Transfer-Encoding: base64","",w(doc),"--"+B+"--",""].join("\r\n");
   const n=($("elSpr").value==="fr"?"Demande de baptême":"Anmeldung zur Taufe")+" – E-Mail an die Eltern.eml";
   const a=document.createElement("a"); a.href=URL.createObjectURL(new Blob([eml],{type:"message/rfc822"})); a.download=n; document.body.appendChild(a); a.click(); a.remove(); msg(L("emlDone",{f:n}),"ok"); }
 function elUpd(){ if(PUBLIC) return; $("elUrl").value=elUrl(); $("bElMail").href=elMailHref(); }
@@ -327,6 +356,10 @@ if(!PUBLIC){ $("eltern").hidden=false; $("elBis").value=isoD(new Date(Date.now()
 if(PUBLIC){ const h=new URLSearchParams(location.hash.slice(1)); if(h.get("lang")==="fr"&&!localStorage.getItem("wil-start-lang")){ LANG="fr"; }
   const bis=h.get("bis"), ok=/^\d{4}-\d{2}-\d{2}$/.test(bis||""), alt=ok&&bis<isoD(new Date());
   if(!ok||alt){ const c=document.querySelector(".cols"); c.hidden=true; c.insertAdjacentHTML("beforebegin",`<div class="card"><p style="font-size:16px;margin:0">${esc(ok?L("gateOld",{d:dmy(bis),m:RETOUR}):L("gateNo"))}</p></div>`); $("priv").hidden=true; }
+  $("bShare").onclick=async()=>{ if(!LAST){ msg(L("need"),"bad"); return; } const n=[v("k_name"),v("k_vorn")].filter(Boolean).join(" ");
+    const file=new File([LAST.bytes],LAST.n,{type:"application/pdf"}); const data={files:[file],title:"Anmeldung zur Taufe – "+n,text:(LANG==="fr"?"Demande de baptême – à envoyer à ":"Anmeldung zur Taufe – bitte senden an ")+RETOUR};
+    try{ if(navigator.canShare&&navigator.canShare({files:[file]})){ await navigator.share(data); } else msg(L("shareNo"),"bad"); }catch(e){ if(e&&e.name!=="AbortError") msg(L("shareNo"),"bad"); } };
+  $("bAdr").onclick=async()=>{ try{ await navigator.clipboard.writeText(RETOUR); msg(L("adrCopied"),"ok"); }catch(e){} };
   $("bMail").onclick=()=>{ const n=[v("k_name"),v("k_vorn")].filter(Boolean).join(" "); $("bMail").href="mailto:"+RETOUR+"?subject="+encodeURIComponent("Anmeldung zur Taufe – "+n)+"&body="+encodeURIComponent(LANG==="fr"?"Bonjour,\n\nVeuillez trouver en pièce jointe la demande de baptême.\n\n":"Grüss Gott\n\nIm Anhang die Anmeldung zur Taufe.\n\n"); };
 }
 /* Übernahme aus dem Liber Status Animarum: LSA im Auswahlmodus öffnen, Antwort per postMessage (nichts wird gespeichert) */
