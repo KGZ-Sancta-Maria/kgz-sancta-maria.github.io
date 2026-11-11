@@ -590,7 +590,7 @@ const M = (() => {
     renderLock();
     try { if (window.claude?.use) { claude.use('downloads').then(d => { dl = d; if (key && view.n === 'notes') render() }).catch(() => { }) } } catch (e) { }
   }
-  return { init, getDocs, renderPdf, esc, t, lang, today, iso, parse, addDays, diffDays, fmtD, fmtLong, wd, mon, chf, norm, src, srcInfo, ui, go, render, toast, save, derive, unb64, b64, get st() { return st }, get view() { return view } };
+  return { init, getDocs, renderPdf, esc, t, lang, today, iso, parse, addDays, diffDays, fmtD, fmtLong, wd, mon, chf, norm, src, srcInfo, ui, go, render, toast, save, derive, unb64, b64, addNote, pushNotes, /* (2026-11-11) für die Bibliothek-App */ get st() { return st }, get view() { return view } };
 })();
 
 const ICON = {
