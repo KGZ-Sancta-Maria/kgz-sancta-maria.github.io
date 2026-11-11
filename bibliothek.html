@@ -1,0 +1,838 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Bibliothek Wil</title>
+<meta name="description" content="Sancta Maria Wil – auf dem Handy / sur le Natel">
+<meta name="theme-color" content="#6b3d2e">
+<meta name="robots" content="noindex,nofollow">
+<link rel="manifest" href="bibliothek.webmanifest">
+<link rel="icon" href="wil-192.png">
+<link rel="apple-touch-icon" href="wil-touch.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Bibliothek">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spectral:wght@500;600;700&family=Source+Sans+3:wght@400;500;600;700&display=swap">
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}
+/* Layout: une colonne de lecture au Natel, barre d'onglets fixe en bas ; sur grand écran, colonne centrée de 720px */
+:root{
+  --bg:#eef1ec; --surface:#ffffff; --ink:#1b211c; --muted:#5b665e; --line:#d5ded6; --tint:#f1f5f1;
+  --accent:#1f5230; --accent2:#2c6f41; --gold:#9a6a1c; --red:#a3242f; --amber:#a45f00;
+  --display:"Spectral",Georgia,"Times New Roman",serif; --body:"Source Sans 3",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --navh:62px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#121613;--surface:#1b211d;--ink:#e8eee9;--muted:#9eab9f;--line:#2e3a31;--tint:#212a23;--accent:#8fc79f;--accent2:#7fbf91;--gold:#d9b06a;--red:#ef8f97;--amber:#f0b45a;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#121613;--surface:#1b211d;--ink:#e8eee9;--muted:#9eab9f;--line:#2e3a31;--tint:#212a23;--accent:#8fc79f;--accent2:#7fbf91;--gold:#d9b06a;--red:#ef8f97;--amber:#f0b45a;color-scheme:dark}
+*{box-sizing:border-box}
+html,body{background:var(--bg)}
+body{color:var(--ink);font:16px/1.45 var(--body);-webkit-text-size-adjust:100%}
+.wrap{max-width:720px;margin:0 auto;padding-block:12px calc(var(--navh) + 28px + env(safe-area-inset-bottom,0px));padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:14px}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0}
+h1{font-size:26px;line-height:1.15}
+h2{font-size:20px;line-height:1.2}
+h3{font:600 12.5px var(--body);letter-spacing:.13em;text-transform:uppercase;color:var(--muted)}
+a{color:var(--accent)}
+.muted{color:var(--muted)} .small{font-size:14px}
+.top{display:flex;align-items:center;gap:12px}
+.top img{width:42px;height:42px;border-radius:50%;flex:none;background:#fff;object-fit:cover}
+.top .tt{flex:1;min-width:0}
+.top .tt b{display:block;font:700 20px/1.1 var(--display)}
+.top .tt span{font-size:13px;color:var(--muted)}
+.pill{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:6px 12px;font:600 13px var(--body);cursor:pointer}
+.hero{background:var(--accent);color:#fff;border-radius:16px;padding:16px 18px;display:flex;flex-direction:column;gap:6px}
+:root[data-theme="dark"] .hero{color:#0f1a12}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .hero{color:#0f1a12}}
+.hero small{font:600 12px var(--body);letter-spacing:.14em;text-transform:uppercase;opacity:.85}
+.hero .fest{font:700 22px/1.2 var(--display)}
+.hero .slots{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+.hero .slots span{background:rgba(255,255,255,.16);border-radius:8px;padding:3px 8px;font-size:14px}
+.sec{display:flex;flex-direction:column;gap:8px}
+.sec-h{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.sec-h a,.linkbtn{font:600 14px var(--body);color:var(--accent);background:none;border:0;padding:0;cursor:pointer;text-decoration:none}
+.list{display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.row{display:flex;gap:12px;align-items:flex-start;padding:12px 14px;border:0;border-top:1px solid var(--line);background:none;color:inherit;font:inherit;text-align:left;width:100%;text-decoration:none}
+.row:first-child{border-top:0}
+button.row,a.row{cursor:pointer}
+button.row:active,a.row:active{background:var(--tint)}
+.row .m{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.row .m b{font-weight:600}
+.row .m small{color:var(--muted);font-size:14px;overflow-wrap:anywhere}
+.row .s{flex:none;display:flex;flex-direction:column;align-items:flex-end;gap:4px;text-align:right}
+.date{flex:none;width:46px;text-align:center;line-height:1.05;font-variant-numeric:tabular-nums}
+.date b{display:block;font:700 20px var(--display)}
+.date span{font-size:11.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.chip{display:inline-block;border-radius:999px;padding:2px 9px;font:600 12.5px var(--body);background:var(--tint);color:var(--muted);white-space:nowrap}
+.chip.red{color:var(--red)} .chip.amber{color:var(--amber)} .chip.ok{color:var(--accent)}
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%;border:1px solid var(--line);vertical-align:0;margin-right:6px}
+.empty{padding:18px 14px;color:var(--muted);font-size:15px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:10px}
+.kv{display:grid;grid-template-columns:minmax(90px,34%) 1fr;gap:6px 12px;margin:0}
+.kv dt{color:var(--muted);font-size:14px} .kv dd{margin:0;min-width:0;overflow-wrap:anywhere}
+.txt{white-space:pre-wrap;overflow-wrap:anywhere}
+input[type=search],input[type=text],input[type=password],textarea,select{width:100%;font:16px var(--body);color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:11px 13px}
+textarea{min-height:110px;resize:vertical}
+input:focus-visible,textarea:focus-visible,select:focus-visible,button:focus-visible,a:focus-visible{outline:3px solid var(--accent2);outline-offset:2px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border-radius:12px;padding:11px 16px;font:600 15px var(--body);border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer;text-decoration:none}
+.btn.pri{background:var(--accent);border-color:var(--accent);color:var(--bg)}
+.btn.sm{padding:6px 11px;font-size:13.5px;border-radius:10px}
+.btn.danger{color:var(--red)}
+.bar{display:flex;flex-wrap:wrap;gap:8px}
+.tabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px}
+.tabs button{flex:none;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:7px 13px;font:600 14px var(--body);cursor:pointer}
+.tabs button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--bg)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px}
+.tile{display:flex;flex-direction:column;gap:6px;align-items:flex-start;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px;color:inherit;text-decoration:none;font:inherit;cursor:pointer;text-align:left}
+.tile svg{width:26px;height:26px;color:var(--accent)}
+.tile b{font:600 16px var(--display)} .tile small{color:var(--muted);font-size:13px}
+nav.tabbar{position:fixed;left:0;right:0;bottom:0;z-index:5;background:var(--surface);border-top:1px solid var(--line);display:flex;justify-content:center;padding-bottom:env(safe-area-inset-bottom,0px);padding-left:env(safe-area-inset-left,0px);padding-right:env(safe-area-inset-right,0px)}
+nav.tabbar a{flex:1;max-width:144px;height:var(--navh);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--muted);text-decoration:none;font:600 11.5px var(--body)}
+nav.tabbar a[aria-current="page"]{color:var(--accent)}
+nav.tabbar svg{width:23px;height:23px}
+svg{fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.lock{min-height:100%;display:flex;flex-direction:column;justify-content:center;gap:16px;max-width:420px;margin:0 auto;padding-block:40px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.lock img{width:84px;height:84px;border-radius:50%;background:#fff;object-fit:cover}
+.err{color:var(--red);font-size:14px;min-height:1em}
+.note{font-size:14px;color:var(--muted);background:var(--surface);border:1px dashed var(--line);border-radius:12px;padding:12px 14px}
+.warn{border-color:var(--amber);color:var(--ink)}
+#toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(var(--navh) + 16px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:12px;font-size:15px;z-index:20;max-width:calc(100% - 32px)}
+.num{font-variant-numeric:tabular-nums}
+.copy{user-select:all;-webkit-user-select:all}
+.hl{background:var(--tint);border-radius:6px;padding:0 4px}
+@media (prefers-reduced-motion:no-preference){.row,.tile,.btn{transition:background .12s}}
+
+/* (2026-11-07) pas de rechargement du navigateur en tirant vers le bas : l'application actualise elle-même */
+html,body{overscroll-behavior-y:none}
+#ptr{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 8px);z-index:60;transform:translate(-50%,-50px);opacity:0;background:var(--surface,#fff);color:var(--accent,#1f5230);border:1px solid rgba(0,0,0,.12);border-radius:999px;padding:8px 16px;font-weight:600;font-size:15px;box-shadow:0 4px 14px rgba(0,0,0,.15);transition:opacity .15s;pointer-events:none;white-space:nowrap}
+.pin{-webkit-text-security:disc;text-security:disc;letter-spacing:.2em}
+
+</style></head><body>
+<div id="app"></div>
+<script>window.STANDALONE=true;window.LOGO="data:image/png;base64,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";
+if('serviceWorker' in navigator){addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}</script>
+<script>
+'use strict';
+/* ============ Noyau commun des applications Natel ============
+   Le code est en ligne ; les données viennent de fichiers choisis sur le Natel (OneDrive / SharePoint)
+   et restent sur ce Natel, chiffrées avec le code de verrouillage. */
+const M = (() => {
+  const ITER = 210000, AUTOLOCK_MIN = 10;
+  let cfg, key = null, st = null, dl = null, memOnly = false, hiddenAt = 0, pendingLien = null, syncing = false, pushing = false;
+  let view = { n: 'home', a: null }, stack = [], ui = {};
+  const app = () => document.getElementById('app');
+
+  /* ---------- petits outils ---------- */
+  const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const pad = n => String(n).padStart(2, '0');
+  const iso = d => d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+  const today = () => iso(new Date());
+  const parse = s => { const [y, m, d] = String(s).slice(0, 10).split('-').map(Number); return new Date(y, (m || 1) - 1, d || 1) };
+  const addDays = (s, n) => { const d = parse(s); d.setDate(d.getDate() + n); return iso(d) };
+  const diffDays = (a, b) => Math.round((parse(b) - parse(a)) / 864e5);
+  const locale = () => (lang() === 'de' ? 'de-CH' : 'fr-CH');
+  const fmtD = (s, o) => { if (!s) return ''; try { return parse(s).toLocaleDateString(locale(), o || { day: 'numeric', month: 'numeric', year: 'numeric' }) } catch (e) { return s } };
+  const fmtLong = s => fmtD(s, { weekday: 'long', day: 'numeric', month: 'long' });
+  const wd = s => fmtD(s, { weekday: 'short' }).replace('.', '');
+  const mon = s => fmtD(s, { month: 'short' }).replace('.', '');
+  const chf = n => (Math.round((+n || 0) * 100) / 100).toLocaleString('de-CH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const uid = () => Math.random().toString(36).slice(2, 9) + Date.now().toString(36).slice(-4);
+  const norm = s => String(s ?? '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+  const LS = { get(k) { try { return localStorage.getItem(k) } catch (e) { return null } }, set(k, v) { try { localStorage.setItem(k, v) } catch (e) { } } };
+  function lang() { return cfg.langs.includes(LS.get(cfg.id + '-lang')) ? LS.get(cfg.id + '-lang') : cfg.langs[0] }
+  function t(k, p) { const D = cfg.T[lang()] || cfg.T[cfg.langs[0]]; let s = D[k] ?? cfg.T[cfg.langs[0]][k] ?? k; if (p) for (const x in p) s = s.split('{' + x + '}').join(p[x]); return s }
+  function toast(msg) { let el = document.getElementById('toast'); if (!el) { el = document.createElement('div'); el.id = 'toast'; el.setAttribute('role', 'status'); document.body.appendChild(el) } el.textContent = msg; el.hidden = false; clearTimeout(toast.t); toast.t = setTimeout(() => el.hidden = true, 2600) }
+
+  /* ---------- chiffrement ---------- */
+  const b64 = u8 => { let s = ''; const a = new Uint8Array(u8); for (let i = 0; i < a.length; i += 0x8000) s += String.fromCharCode.apply(null, a.subarray(i, i + 0x8000)); return btoa(s) };
+  const unb64 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+  async function derive(pw, salt, iter) { const base = await crypto.subtle.importKey('raw', new TextEncoder().encode(pw), 'PBKDF2', false, ['deriveKey']); return crypto.subtle.deriveKey({ name: 'PBKDF2', salt, iterations: iter || ITER, hash: 'SHA-256' }, base, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']) }
+  async function enc(obj, k) { const iv = crypto.getRandomValues(new Uint8Array(12)); const ct = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, k, new TextEncoder().encode(JSON.stringify(obj))); return { iv: b64(iv), ct: b64(ct) } }
+  async function dec(o, k) { const pt = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: unb64(o.iv) }, k, unb64(o.ct)); return JSON.parse(new TextDecoder().decode(pt)) }
+
+  /* ---------- stockage local (IndexedDB) ---------- */
+  let dbp = null, docsMem = null;
+  function idb() { if (!dbp) dbp = new Promise((res, rej) => { try { const r = indexedDB.open('natel-' + cfg.id, 1); r.onupgradeneeded = () => r.result.createObjectStore('kv'); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error) } catch (e) { rej(e) } }); return dbp }
+  async function kvGet(k) { const d = await idb(); return new Promise((res, rej) => { const q = d.transaction('kv').objectStore('kv').get(k); q.onsuccess = () => res(q.result); q.onerror = () => rej(q.error) }) }
+  async function kvSet(k, v) { const d = await idb(); return new Promise((res, rej) => { const tx = d.transaction('kv', 'readwrite'); tx.objectStore('kv').put(v, k); tx.oncomplete = () => res(); tx.onerror = () => rej(tx.error) }) }
+  async function kvDel(k) { const d = await idb(); return new Promise(res => { const tx = d.transaction('kv', 'readwrite'); tx.objectStore('kv').delete(k); tx.oncomplete = () => res(); tx.onerror = () => res() }) }
+  /* Coffre v2 : les données sont chiffrées par une clé aléatoire (DEK) ;
+     cette clé est enveloppée une fois par le code, et éventuellement une fois par l'empreinte (WebAuthn PRF). */
+  let saving = Promise.resolve(), dekRaw = null;
+  const rnd = n => crypto.getRandomValues(new Uint8Array(n));
+  const aes = raw => crypto.subtle.importKey('raw', raw, { name: 'AES-GCM' }, false, ['encrypt', 'decrypt']);
+  async function wrapWith(k, raw) { const iv = rnd(12); return { iv: b64(iv), ct: b64(await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, k, raw)) } }
+  async function unwrapWith(k, w) { return new Uint8Array(await crypto.subtle.decrypt({ name: 'AES-GCM', iv: unb64(w.iv) }, k, unb64(w.ct))) }
+  function save() { if (!key || !st || memOnly) return saving; saving = saving.then(async () => { try { const v = await enc(st, key); const o = await kvGet('vault'); o.iv = v.iv; o.ct = v.ct; await kvSet('vault', o) } catch (e) { memOnly = true; toast(t('store_fail')) } }); return saving }
+  async function hasVault() { try { return !!(await kvGet('vault')) } catch (e) { memOnly = true; return false } }
+  async function codeWrap(code, raw) { const salt = rnd(16); const k = await derive(code, salt); return Object.assign({ salt: b64(salt), iter: ITER }, await wrapWith(k, raw)) }
+  async function createVault(code) {
+    dekRaw = rnd(32); key = await aes(dekRaw); st = { sources: {}, notes: [], v: 2 };
+    if (!memOnly) { try { const v = await enc(st, key); await kvSet('vault', { v: 2, iv: v.iv, ct: v.ct, wraps: { code: await codeWrap(code, dekRaw) } }) } catch (e) { memOnly = true } }
+  }
+  async function openWithRaw(o, raw) { const k = await aes(raw); st = await dec(o, k); key = k; dekRaw = raw; st.sources = st.sources || {}; st.notes = st.notes || [] }
+  async function openVault(code) {
+    const o = await kvGet('vault');
+    if (o.v !== 2) { /* ancien format : clé dérivée du code → migration */
+      const k = await derive(code, unb64(o.salt), o.iter); let d; try { d = await dec(o, k) } catch (e) { return false }
+      dekRaw = rnd(32); key = await aes(dekRaw); st = d; st.sources = st.sources || {}; st.notes = st.notes || [];
+      const v = await enc(st, key); await kvSet('vault', { v: 2, iv: v.iv, ct: v.ct, wraps: { code: await codeWrap(code, dekRaw) } }); return true }
+    try { const w = o.wraps.code; const raw = await unwrapWith(await derive(code, unb64(w.salt), w.iter), w); await openWithRaw(o, raw); return true } catch (e) { return false }
+  }
+  /* ---------- empreinte digitale (WebAuthn + extension PRF) ---------- */
+  const bioPossible = () => !!(window.PublicKeyCredential && navigator.credentials && window.isSecureContext && window.self === window.top);
+  async function prfKey(secret) { const base = await crypto.subtle.importKey('raw', secret, 'HKDF', false, ['deriveKey']); return crypto.subtle.deriveKey({ name: 'HKDF', hash: 'SHA-256', salt: new TextEncoder().encode(cfg.id + '-bio'), info: new Uint8Array() }, base, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']) }
+  async function bioGet(credId, prfSalt) {
+    const a = await navigator.credentials.get({ publicKey: { challenge: rnd(32), rpId: location.hostname, allowCredentials: [{ type: 'public-key', id: unb64(credId) }], userVerification: 'required', timeout: 60000, extensions: { prf: { eval: { first: unb64(prfSalt) } } } } });
+    const r = a.getClientExtensionResults()?.prf?.results?.first; if (!r) throw new Error('noprf'); return new Uint8Array(r);
+  }
+  async function bioEnable() {
+    if (!bioPossible()) throw new Error('nobio');
+    const prfSalt = rnd(32);
+    const c = await navigator.credentials.create({ publicKey: { challenge: rnd(32), rp: { name: cfg.name, id: location.hostname }, user: { id: rnd(16), name: cfg.name, displayName: cfg.name }, pubKeyCredParams: [{ type: 'public-key', alg: -7 }, { type: 'public-key', alg: -257 }], authenticatorSelection: { authenticatorAttachment: 'platform', userVerification: 'required', residentKey: 'preferred' }, timeout: 60000, extensions: { prf: { eval: { first: prfSalt } } } } });
+    const credId = b64(c.rawId); let secret = c.getClientExtensionResults()?.prf?.results?.first;
+    if (c.getClientExtensionResults()?.prf?.enabled === false) throw new Error('noprf');
+    secret = secret ? new Uint8Array(secret) : await bioGet(credId, b64(prfSalt));
+    const o = await kvGet('vault'); o.wraps.bio = Object.assign({ credId, prfSalt: b64(prfSalt) }, await wrapWith(await prfKey(secret), dekRaw)); await kvSet('vault', o);
+  }
+  async function bioOpen() { const o = await kvGet('vault'); const w = o.wraps?.bio; const secret = await bioGet(w.credId, w.prfSalt); await openWithRaw(o, await unwrapWith(await prfKey(secret), w)) }
+  async function bioDisable() { const o = await kvGet('vault'); delete o.wraps.bio; await kvSet('vault', o) }
+  async function hasBio() { try { const o = await kvGet('vault'); return !!o?.wraps?.bio } catch (e) { return false } }
+  function lock() { key = null; st = null; dekRaw = null; docsMem = null; cfg.onLock && cfg.onLock(); stack = []; renderLock() }
+  async function wipe() { try { await kvDel('vault'); await kvDel('docs') } catch (e) { } key = null; st = null; dekRaw = null; docsMem = null; cfg.onLock && cfg.onLock(); renderLock() }
+
+  async function renderLock(errMsg) {
+    const exists = memOnly ? false : await hasVault();
+    const bio = exists && bioPossible() && await hasBio();
+    document.body.classList.remove('in');
+    app().innerHTML = `<div class="lock">
+      <img src="${cfg.logo}" alt="">
+      <div><h1>${esc(cfg.name)}</h1><p class="muted" style="margin:6px 0 0">${exists ? t('lock_intro') : t('first_intro')}</p></div>
+      ${cfg.langs.length > 1 ? `<div class="bar">${langBtn()}</div>` : ''}
+      ${bio ? `<button class="btn pri" id="bioopen" type="button">${ICON.finger} ${t('bio_open')}</button>` : ''}
+      <form id="lockf" class="sec" autocomplete="off">
+        <label for="code1" class="small muted">${exists ? t('code') : t('code_new')}</label>
+        <input id="code1" class="pin" type="text" inputmode="numeric" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" data-form-type="other" required minlength="4">
+        ${exists ? '' : `<label for="code2" class="small muted">${t('code_again')}</label><input id="code2" class="pin" type="text" inputmode="numeric" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" data-form-type="other" required minlength="4">`}
+        <div class="err" id="lockerr">${esc(errMsg || '')}</div>
+        <button class="btn ${bio ? '' : 'pri'}" type="submit">${exists ? t('unlock') : t('create')}</button>
+      </form>
+      ${exists ? `<details><summary class="small muted">${t('forgot')}</summary><p class="small muted">${t('forgot_txt')}</p><button class="btn danger sm" id="wipe" type="button">${t('wipe_all')}</button></details>` : `<p class="note">${t('first_note')}</p>`}
+    </div>`;
+    const f = document.getElementById('lockf'), err = document.getElementById('lockerr');
+    f.addEventListener('submit', async e => {
+      e.preventDefault(); const c1 = document.getElementById('code1').value;
+      if (c1.length < (exists ? 4 : 6)) { err.textContent = t(exists ? 'code_short' : 'code_short6'); return }
+      err.textContent = t('working');
+      if (!exists) { const c2 = document.getElementById('code2').value; if (c1 !== c2) { err.textContent = t('code_mismatch'); return } await createVault(c1); go('donnees'); if (pendingLien && cfg.autoSync) { const k = pendingLien; pendingLien = null; linkWith(k) } return }
+      if (await openVault(c1)) { start() } else { err.textContent = t('code_wrong') }
+    });
+    document.getElementById('bioopen')?.addEventListener('click', async () => { err.textContent = ''; try { await bioOpen(); start() } catch (e) { err.textContent = t('bio_fail') } });
+    document.getElementById('wipe')?.addEventListener('click', wipe);
+    bindLang();
+    if (!bio) setTimeout(() => document.getElementById('code1')?.focus(), 50);
+  }
+
+  /* ---------- mise à jour automatique : paquet chiffré publié par l'ordinateur à côté de l'application ----------
+     Format MT1 : « MT1 » | sel (16) | iv (16) | données AES-256-CBC (JSON compressé gzip) | HMAC-SHA256 (32). Clés : PBKDF2-SHA256(clé de liaison, sel, 100 000) → 64 octets. */
+  async function mt1Km(pass, salt) {
+    const base = await crypto.subtle.importKey('raw', new TextEncoder().encode(pass), 'PBKDF2', false, ['deriveBits']);
+    return new Uint8Array(await crypto.subtle.deriveBits({ name: 'PBKDF2', salt, iterations: 100000, hash: 'SHA-256' }, base, 512));
+  }
+  async function mt1Open(bb, pass) {
+    if (bb.length < 100 || String.fromCharCode(bb[0], bb[1], bb[2]) !== 'MT1') return null;
+    const km = await mt1Km(pass, bb.slice(3, 19));
+    const mk = await crypto.subtle.importKey('raw', km.slice(32), { name: 'HMAC', hash: 'SHA-256' }, false, ['verify']);
+    if (!await crypto.subtle.verify('HMAC', mk, bb.slice(bb.length - 32), bb.slice(0, bb.length - 32))) return null;
+    const ek = await crypto.subtle.importKey('raw', km.slice(0, 32), { name: 'AES-CBC' }, false, ['decrypt']);
+    const z = await crypto.subtle.decrypt({ name: 'AES-CBC', iv: bb.slice(19, 35) }, ek, bb.slice(35, bb.length - 32));
+    return await new Response(new Blob([z]).stream().pipeThrough(new DecompressionStream('gzip'))).text();
+  }
+  async function mt1Enc(text, pass) {
+    const z = new Uint8Array(await new Response(new Blob([text]).stream().pipeThrough(new CompressionStream('gzip'))).arrayBuffer());
+    const salt = rnd(16), iv = rnd(16), km = await mt1Km(pass, salt);
+    const ek = await crypto.subtle.importKey('raw', km.slice(0, 32), { name: 'AES-CBC' }, false, ['encrypt']);
+    const ct = new Uint8Array(await crypto.subtle.encrypt({ name: 'AES-CBC', iv }, ek, z));
+    const body = new Uint8Array(35 + ct.length); body.set([77, 84, 49]); body.set(salt, 3); body.set(iv, 19); body.set(ct, 35);
+    const mk = await crypto.subtle.importKey('raw', km.slice(32), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
+    const mac = new Uint8Array(await crypto.subtle.sign('HMAC', mk, body));
+    const out = new Uint8Array(body.length + 32); out.set(body); out.set(mac, body.length); return out;
+  }
+  /* ---------- notes : elles partent toutes seules vers l'ordinateur (chiffrées, par GitHub), puis disparaissent d'ici une fois arrivées ---------- */
+  const ghH = () => ({ Authorization: 'Bearer ' + st.notesTok, Accept: 'application/vnd.github+json' });
+  const notesAuto = () => !!(cfg.notesRepo && st && st.syncKey && st.notesTok);
+  async function pushNotes() {
+    if (!notesAuto() || pushing) return 0; pushing = true; let n0 = 0;
+    try {
+      for (const n of st.notes.filter(x => !x.sent)) {
+        const blob = await mt1Enc(JSON.stringify({ v: 1, app: cfg.id, id: n.id, d: n.d, dom: n.dom || '', domLabel: n.dom && cfg.noteDomains[n.dom] ? t(cfg.noteDomains[n.dom]) : '', ref: n.ref || null, who: st.who || '', text: (st.who ? st.who + ' : ' : '') + n.text }), st.syncKey);
+        let r;
+        try { r = await fetch(`https://api.github.com/repos/${cfg.notesRepo}/issues`, { method: 'POST', cache: 'no-store', headers: Object.assign({ 'Content-Type': 'application/json' }, ghH()), body: JSON.stringify({ title: 'natel-note ' + cfg.id, body: b64(blob) }) }) }
+        catch (e) { st.notesErr = 'reseau'; st.notesErrTxt = String(e && e.message || e); break }
+        if (r.status === 401 || r.status === 403 || r.status === 404) { st.notesErr = 'jeton'; st.notesErrTxt = 'GitHub ' + r.status; break }
+        if (!r.ok) { st.notesErr = 'http'; st.notesErrTxt = 'GitHub ' + r.status; break }
+        const j = await r.json(); n.sent = j.number; st.notesErr = ''; st.notesErrTxt = ''; n0++;
+      }
+      st.notesTry = new Date().toISOString();
+      await save();
+    } catch (e) { st.notesErr = 'autre'; st.notesErrTxt = String(e && e.message || e) } finally { pushing = false }
+    if (n0 && view.n === 'notes') render();
+    return n0;
+  }
+  /* (2026-11-07) état de l'envoi automatique, en clair, avec la raison quand ça ne marche pas */
+  function notesState() {
+    const L = (f, d) => lang() === 'de' ? d : f;
+    const waiting = st.notes.filter(x => !x.sent).length;
+    if (!cfg.notesRepo) return { ok: false, txt: L('Cette application n’envoie pas les notes.', 'Diese App sendet keine Notizen.') };
+    if (!st.syncKey) return { ok: false, txt: L('Envoi automatique PAS actif : ce Natel n’est pas encore relié à l’ordinateur. Onglet « Données » → entrer la clé de liaison (lien MyWil reçu du prieur).', 'Automatisches Senden NICHT aktiv: dieses Handy ist noch nicht mit dem Computer verbunden. Register «Daten» → Verbindungsschlüssel eingeben (MyWil-Link vom Prior).') };
+    if (!st.notesTok) return { ok: false, txt: L('Envoi automatique PAS encore prêt : le Natel n’a pas encore reçu la clé d’envoi de l’ordinateur. Appuyez sur « Envoyer maintenant ».', 'Automatisches Senden noch NICHT bereit: das Handy hat den Sendeschlüssel vom Computer noch nicht erhalten. «Jetzt senden» drücken.') };
+    if (st.notesErr === 'jeton') return { ok: false, txt: L('GitHub refuse la clé d’envoi (' + (st.notesErrTxt || '') + ') : prévenir le prieur (clé des notes de MyWil à renouveler, droit « Issues : Read and write »).', 'GitHub lehnt den Sendeschlüssel ab (' + (st.notesErrTxt || '') + '): bitte dem Prior melden (Notiz-Schlüssel von MyWil mit «Issues: Read and write» erneuern).') };
+    if (st.notesErr) return { ok: false, txt: L('Dernier essai d’envoi raté (' + (st.notesErrTxt || st.notesErr) + '). Vérifiez la connexion Internet, puis « Envoyer maintenant ».', 'Letzter Sendeversuch fehlgeschlagen (' + (st.notesErrTxt || st.notesErr) + '). Internet prüfen, dann «Jetzt senden».') };
+    return { ok: true, txt: waiting ? L(waiting + ' note(s) pas encore partie(s) – elles partent dès que le Natel a Internet.', waiting + ' Notiz(en) noch nicht gesendet – sie gehen, sobald das Handy Internet hat.') : L('Envoi automatique actif : les notes partent toutes seules vers l’ordinateur.', 'Automatisches Senden aktiv: die Notizen gehen von selbst an den Computer.') };
+  }
+  /* (2026-11-07) Envoi par OneDrive : le Natel crée un petit fichier avec les notes, Android le dépose dans OneDrive › Natel › Notes ; l'ordinateur le reprend tout seul. */
+  async function shareOneDrive() {
+    const L = (f, d) => lang() === 'de' ? d : f;
+    const P = st.notes.filter(n => !n.done && !n.od);
+    if (!P.length) { toast(L('Aucune nouvelle note à envoyer.', 'Keine neue Notiz zu senden.')); return }
+    const now = new Date(), pad = x => String(x).padStart(2, '0');
+    const stamp = `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}-${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}`;
+    const data = { app: cfg.id, made: now.toISOString(), notes: P.map(n => ({ v: 1, app: cfg.id, id: n.id, d: n.d, dom: n.dom || '', domLabel: n.dom && cfg.noteDomains[n.dom] ? t(cfg.noteDomains[n.dom]) : '', ref: n.ref || null, who: st.who || '', text: (st.who ? st.who + ' : ' : '') + n.text })) };
+    const name = `${cfg.id}-notes-${stamp}.txt`;
+    const file = new File([JSON.stringify(data, null, 1)], name, { type: 'text/plain' });
+    let ok = false;
+    try {
+      if (navigator.canShare && navigator.canShare({ files: [file] })) { await navigator.share({ files: [file], title: name }); ok = true }
+      else { const a = document.createElement('a'); a.href = URL.createObjectURL(file); a.download = name; document.body.appendChild(a); a.click(); a.remove(); ok = true }
+    } catch (e) {
+      if (e && e.name === 'AbortError') return;
+      /* secours : copier le texte pour le coller dans un courriel à soi-même */
+      try { await navigator.clipboard.writeText(P.map(n => n.text).join('\n\n')) } catch (_) { }
+      toast(L('Partage refusé par le téléphone (' + ((e && (e.name || e.message)) || e) + '). Le texte est copié.', 'Teilen vom Handy abgelehnt (' + ((e && (e.name || e.message)) || e) + '). Text kopiert.')); return }
+    if (ok) { const iso = now.toISOString(); P.forEach(n => n.od = iso); await save(); render(); toast(L(P.length + ' note(s) envoyée(s) – choisir OneDrive › Natel › Notes', P.length + ' Notiz(en) gesendet – OneDrive › Natel › Notes wählen')) }
+  }
+  async function sendNow() {
+    const L = (f, d) => lang() === 'de' ? d : f;
+    toast(t('working'));
+    if (st.syncKey && !st.notesTok) { st.syncMade = ''; await autoSync(true) }
+    const n = await pushNotes(); await checkReceipts(); render();
+    const s = notesState(); toast(n ? L(n + ' note(s) envoyée(s).', n + ' Notiz(en) gesendet.') : s.ok ? L('Rien à envoyer.', 'Nichts zu senden.') : s.txt);
+  }
+  async function checkReceipts() {
+    if (!notesAuto()) return; const S = st.notes.filter(x => x.sent); if (!S.length) return; let gone = 0;
+    for (const n of S) { try { const r = await fetch(`https://api.github.com/repos/${cfg.notesRepo}/issues/${n.sent}?t=${Date.now()}`, { headers: ghH(), cache: 'no-store' }); if (!r.ok) continue; const j = await r.json(); if (j.state === 'closed') { st.notes = st.notes.filter(x => x !== n); gone++ } } catch (e) { } }
+    if (gone) { await save(); toast(t('notes_arrived', { n: gone })); if (['notes', 'home'].includes(view.n)) render() }
+  }
+  async function notesSync() { await pushNotes(); await checkReceipts() }
+  /* heure à laquelle l'ordinateur a préparé les données reçues (pas l'heure de la vérification) */
+  function madeTxt() { const m = st && st.syncMade; const d = m ? new Date(m) : null; if (!d || isNaN(d)) return '–'; const hm = d.toTimeString().slice(0, 5); return d.toDateString() === new Date().toDateString() ? hm : d.getDate() + '.' + (d.getMonth() + 1) + '. ' + hm }
+  async function autoSync(force) {
+    if (!cfg.autoSync || !st || !st.syncKey || syncing) return;
+    if (!force && st.syncAt && Date.now() - Date.parse(st.syncAt) < 60e3) { notesSync(); return }
+    syncing = true;
+    try {
+      /* (2026-11-08) niveaux d'acces : un paquet par niveau (direction, pretres, secretariat) ; la cle de liaison n'ouvre que le sien.
+         Le Natel essaie les paquets connus une seule fois, puis retient celui qui s'ouvre avec sa cle (st.syncFile). */
+      let files = st.syncFile ? [st.syncFile] : [cfg.autoSync].concat(cfg.autoSyncAlt || []);
+      let b = null, km = null, salt, iv, ct, mac, netOk = false, pk = st.syncKey;
+      /* (2026-11-09) Zugang pro Person / accès par personne : z-<empreinte de la clé>.bin contient le niveau et la clé du paquet de ce niveau.
+         Absent -> ancien fonctionnement (clé de niveau). Présent mais illisible ou retiré -> accès retiré. */
+      if (cfg.zugang) {
+        const hx = Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(st.syncKey)))).map(x => x.toString(16).padStart(2, '0')).join('');
+        let zr = null; try { zr = await fetch('z-' + hx.slice(0, 20) + '.bin?t=' + Date.now(), { cache: 'no-store' }) } catch (e) { }
+        if (zr && zr.ok) {
+          netOk = true; const zt = await mt1Open(new Uint8Array(await zr.arrayBuffer()), st.syncKey);
+          if (!zt) { st.syncErr = 'cle'; await save(); return }
+          const z = JSON.parse(zt); pk = z.k; files = ['wil-' + z.stufe + '.bin']; try { localStorage.setItem('mywil-tor', hx.slice(0, 20)) } catch (e) { }
+          st.zugang = { name: z.name || '', stufe: z.stufe, stufeName: z.stufeName || '' }; if (z.name && !st.who) st.who = z.name;
+          if (z.jeton) st.notesTok = z.jeton;
+        } else if (zr && zr.status === 404 && st.zugang) { st.syncErr = 'cle'; await save(); return }
+      }
+      for (const f of files) {
+        let r; try { r = await fetch(f + '?t=' + Date.now(), { cache: 'no-store' }) } catch (e) { continue }
+        if (!r.ok) continue; netOk = true;
+        const bb = new Uint8Array(await r.arrayBuffer());
+        if (bb.length < 100 || String.fromCharCode(bb[0], bb[1], bb[2]) !== 'MT1') continue;
+        const s1 = bb.slice(3, 19), k1 = await mt1Km(pk, s1);
+        const mk = await crypto.subtle.importKey('raw', k1.slice(32), { name: 'HMAC', hash: 'SHA-256' }, false, ['verify']);
+        if (!await crypto.subtle.verify('HMAC', mk, bb.slice(bb.length - 32), bb.slice(0, bb.length - 32))) continue;
+        b = bb; km = k1; salt = s1; iv = bb.slice(19, 35); ct = bb.slice(35, bb.length - 32); mac = bb.slice(bb.length - 32);
+        if (st.syncFile !== f) st.syncFile = f;
+        break;
+      }
+      if (!netOk) throw new Error('net');
+      if (!b) { st.syncErr = 'cle'; await save(); return }
+      const ek = await crypto.subtle.importKey('raw', km.slice(0, 32), { name: 'AES-CBC' }, false, ['decrypt']);
+      const z = await crypto.subtle.decrypt({ name: 'AES-CBC', iv }, ek, ct);
+      let text = await new Response(new Blob([z]).stream().pipeThrough(new DecompressionStream('gzip'))).text();
+      if (/^\{\s*"app"\s*:\s*"natel-lien"/.test(text)) { const w = JSON.parse(text); if (w.jeton) st.notesTok = w.jeton; else if (!st.zugang) delete st.notesTok; if (w.stufeName) st.levelName = w.stufeName; else delete st.levelName; if (w.niveau) st.level = w.niveau; else delete st.level; text = w.paquet ? JSON.stringify(w.paquet) : '' }
+      const made = (text.match(/"made"\s*:\s*"([^"]+)"/) || [])[1] || '';
+      st.syncAt = new Date().toISOString(); st.syncErr = '';
+      if (!text) { await save(); if (view.n === 'donnees') render() }
+      else if (made !== st.syncMade) { st.syncMade = made; await importFiles([new File([text], cfg.bundle)], true) } else { await save(); if (view.n === 'donnees') render() }
+    } catch (e) { if (st) { st.syncErr = 'reseau'; if (view.n === 'donnees') render() } }
+    finally { syncing = false }
+    notesSync();
+  }
+  function syncCard() {
+    if (!cfg.autoSync || !st) return '';
+    const when = st.syncAt ? new Date(st.syncAt).toLocaleString(lang() === 'de' ? 'de-CH' : 'fr-CH', { dateStyle: 'short', timeStyle: 'short' }) : '–';
+    const NO = cfg.notesOnly;
+    if (st.syncKey) return `<section class="card"><b>${t(NO ? 'auto_title_n' : 'auto_title')} <span class="chip ok">${t('auto_active')}</span></b><span class="small muted">${NO ? t('auto_on_n', { d: when }) : t('auto_on', { d: when })}</span>
+      ${st.syncErr === 'cle' ? `<p class="note warn">${t('auto_badkey')}</p>` : st.syncErr === 'reseau' ? `<span class="small muted">${t('auto_net')}</span>` : ''}
+      <div class="bar"><button class="btn" data-a="syncnow">${t('auto_now')}</button><button class="btn sm" data-a="unlink">${t('auto_off')}</button></div></section>`;
+    return `<section class="card"><b>${t(NO ? 'auto_title_n' : 'auto_title')}</b><span class="small muted">${t(NO ? 'auto_how_n' : 'auto_how')}</span>
+      <input id="lienkey" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="XXXX-XXXX-XXXX-XXXX-XXXX-XXXX">
+      <button class="btn pri" data-a="link">${t('auto_link')}</button></section>`;
+  }
+  async function linkWith(k) {
+    k = String(k || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+    if (!/^[A-Z2-9]{24}$/.test(k)) { toast(t('auto_badfmt')); return false }
+    st.syncKey = k; st.syncAt = ''; st.syncMade = ''; st.syncErr = ''; delete st.syncFile; delete st.level; delete st.zugang; delete st.levelName; await save(); toast(t(cfg.notesOnly ? 'auto_linked_n' : 'auto_linked')); await autoSync(true); render(); return true;
+  }
+
+  /* ---------- import de fichiers ---------- */
+  async function importFiles(files, auto) {
+    const ok = [], bad = [];
+    const one = (o, name, date) => {
+      const r = (o && o.app === 'natel-dossiers' && Array.isArray(o.groups)) ? { key: 'dossiers', label: 'src_dossiers', data: o } : cfg.detect(o, name);
+      if (!r) return false;
+      st.sources[r.key] = { name, label: r.label, importedAt: new Date().toISOString(), fileDate: date || '', data: r.data };
+      if (!ok.includes(t(r.label))) ok.push(t(r.label)); return true;
+    };
+    for (const f of files) {
+      try {
+        const text = await f.text(); let o; try { o = JSON.parse(text) } catch (e) { bad.push(f.name); continue }
+        if (o && o.app === 'natel-paquet' && Array.isArray(o.files)) { /* paquet préparé par l'ordinateur : plusieurs fichiers en un */
+          const pdfs = o.files.filter(x => x.kind === 'pdf' && x.b64);
+          if (pdfs.length) { docsMem = pdfs.map(x => ({ name: x.name, date: x.date, grp: x.grp || '', draft: !!x.draft, b64: x.b64 })); st.docsInfo = { n: pdfs.length, date: o.made || new Date().toISOString() }; if (!memOnly) { try { await kvSet('docs', await enc({ list: docsMem }, key)) } catch (e) { } } if (!ok.includes(t('src_plans'))) ok.push(t('src_plans')) }
+          for (const x of o.files.filter(x => x.kind !== 'pdf')) { try { one(typeof x.text === 'string' ? JSON.parse(x.text.replace(/^\uFEFF/, '')) : x.content, x.name, x.date) || bad.push(x.name) } catch (e) { bad.push(x.name) } }
+          continue;
+        }
+        if (!one(o, f.name, f.lastModified ? new Date(f.lastModified).toISOString() : '')) bad.push(f.name);
+      } catch (e) { bad.push(f.name) }
+    }
+    cfg.onImport && cfg.onImport();
+    await save();
+    render();
+    toast(auto ? t('auto_done') : ok.length ? t('imported', { n: ok.join(', ') }) + (bad.length ? ' · ' + t('ignored', { n: bad.length }) : '') : t('nothing_imported'));
+  }
+  const src = k => st?.sources?.[k]?.data;
+  const srcInfo = k => st?.sources?.[k];
+
+  /* ---------- notes ---------- */
+  function addNote(text, dom, ref) { st.notes.unshift({ id: uid(), d: new Date().toISOString(), text, dom: dom || '', ref: ref || null, done: false }); return save() }
+  function notesText(onlyOpen) {
+    const N = st.notes.filter(n => !onlyOpen || !n.done);
+    return `${cfg.name} – ${t('notes')} (${fmtD(today())})\n\n` + N.map(n => `• ${fmtD(n.d.slice(0, 10))} ${n.d.slice(11, 16)}${n.dom ? ' [' + (cfg.noteDomains[n.dom] ? t(cfg.noteDomains[n.dom]) : n.dom) + ']' : ''}${n.ref ? ' – ' + n.ref.label : ''}\n  ${n.text.replace(/\n/g, '\n  ')}`).join('\n\n');
+  }
+
+  /* ---------- navigation ---------- */
+  function go(n, a, push) { if (push) stack.push(view); else stack = []; view = { n, a }; if (!push && location.hash.slice(1) !== n) { try { history.replaceState(null, '', '#' + n) } catch (e) { location.hash = n } } render(); window.scrollTo(0, 0) }
+  function back() { view = stack.pop() || { n: 'home' }; render() }
+
+  function header() {
+    const info = cfg.freshness ? cfg.freshness() : '';
+    return `<header class="top"><img src="${cfg.logo}" alt=""><div class="tt"><b>${esc(cfg.name)}</b><span>${info}</span></div>
+      ${cfg.langs.length > 1 ? langBtn() : ''}<button class="pill" data-a="lock" aria-label="${t('lock')}">${ICON.lock}</button></header>`;
+  }
+  const langBtn = () => `<button class="pill" data-a="lang" type="button">${lang() === 'fr' ? 'Deutsch' : 'Français'}</button>`;
+  function bindLang() { app().querySelectorAll('[data-a="lang"]').forEach(b => b.addEventListener('click', () => { LS.set(cfg.id + '-lang', lang() === 'fr' ? 'de' : 'fr'); key ? render() : renderLock() })) }
+  function tabbar() { const cur = cfg.tabs.find(x => x.v === view.n) ? view.n : (cfg.tabOf?.[view.n] || 'more'); return `<nav class="tabbar" aria-label="${t('nav')}">${cfg.tabs.map(x => `<a href="#${x.v}" data-a="tab" data-v="${x.v}" ${x.v === cur ? 'aria-current="page"' : ''}>${ICON[x.icon] || ''}<span>${t(x.label)}</span></a>`).join('')}</nav>` }
+
+  function render() {
+    if (!key) return renderLock();
+    document.body.classList.add('in');
+    const fn = cfg.views[view.n] || cfg.views.home;
+    let body; try { body = fn(view.a) } catch (e) { console.error(e); body = `<div class="card"><b>${t('view_err')}</b><span class="small muted">${esc(e.message)}</span></div>` }
+    const focus = document.activeElement && document.activeElement.id, sel = focus && document.activeElement.selectionStart;
+    const ages = cfg.sources.map(s => srcInfo(s.key)).filter(Boolean).map(i => diffDays((i.fileDate || i.importedAt).slice(0, 10), today()));
+    const stale = view.n !== 'donnees' && ages.length && Math.min(...ages) > 3;
+    app().innerHTML = `<div class="wrap">${header()}${stale ? `<button class="note warn" data-a="tab" data-v="donnees" style="text-align:left;cursor:pointer">${t('stale', { n: Math.min(...ages) })}</button>` : ''}${stack.length ? `<div><button class="linkbtn" data-a="back">← ${t('back')}</button></div>` : ''}${body}</div>${tabbar()}`;
+    if (focus) { const el = document.getElementById(focus); if (el && el.matches('input,textarea')) { el.focus(); try { el.setSelectionRange(sel, sel) } catch (e) { } } }
+    bindLang();
+    if (view.n === 'donnees') fillBioBar();
+    try { cfg.after && cfg.after(view.n, view.a) } catch (e) { }
+  }
+
+  /* ---------- événements (délégation) ---------- */
+  function bind() {
+    document.addEventListener('click', async e => {
+      const el = e.target.closest('[data-a]'); if (!el || !key) return;
+      const a = el.dataset.a;
+      if (a === 'lang') return;
+      if (a === 'tab') { e.preventDefault(); go(el.dataset.v); return }
+      if (a === 'go') { e.preventDefault(); go(el.dataset.v, el.dataset.arg ?? null, el.dataset.push !== '0'); return }
+      if (a === 'back') { back(); return }
+      if (a === 'lock') { lock(); return }
+      if (a === 'ui') { ui[el.dataset.k] = el.dataset.val; render(); return }
+      if (a === 'copy') { const txt = el.dataset.txt || document.getElementById(el.dataset.from)?.value || ''; try { await navigator.clipboard.writeText(txt); toast(t('copied')) } catch (err) { const ta = document.getElementById(el.dataset.from); if (ta) { ta.hidden = false; ta.focus(); ta.select() } toast(t('copy_manual')) } return }
+      if (a === 'pick') { document.getElementById('filepick')?.click(); return }
+      if (cfg.actions[a]) cfg.actions[a](el, e);
+    });
+    document.addEventListener('input', e => { const el = e.target; if (el.dataset && el.dataset.live) { ui[el.dataset.live] = el.value; clearTimeout(bind.t); bind.t = setTimeout(render, 120) } });
+    document.addEventListener('change', e => { const el = e.target; if (el.id === 'notewho') { st.who = el.value.trim().slice(0, 40); save(); toast(lang() === 'de' ? 'Name gespeichert.' : 'Nom enregistré.'); return } if (el.id === 'filepick' && el.files?.length) { importFiles([...el.files]); el.value = '' } else if (el.dataset && el.dataset.ui) { ui[el.dataset.ui] = el.value; render() } });
+    document.addEventListener('visibilitychange', () => { if (document.hidden) hiddenAt = Date.now(); else if (key && hiddenAt && Date.now() - hiddenAt > AUTOLOCK_MIN * 60e3) lock(); else if (key) autoSync(false) });
+    window.addEventListener('hashchange', () => { const h = location.hash.slice(1); if (key && cfg.views[h] && h !== view.n) go(h) });
+    /* tirer vers le bas : l'application va chercher les nouvelles données elle-même ; le navigateur ne recharge plus la page (ce qui redemandait le code) */
+    (() => {
+      let y0 = null, dy = 0, ind = null;
+      const show = (h, txt) => { if (!ind) { ind = document.createElement('div'); ind.id = 'ptr'; ind.setAttribute('aria-hidden', 'true'); document.body.appendChild(ind) } ind.textContent = txt; ind.style.transform = `translate(-50%,${Math.min(h, 90) - 46}px)`; ind.style.opacity = String(Math.min(1, h / 60)) };
+      const hide = () => { if (ind) { ind.style.opacity = '0'; ind.style.transform = 'translate(-50%,-50px)' } };
+      document.addEventListener('touchstart', e => { const ok = key && cfg.autoSync && st && st.syncKey && (window.scrollY || document.documentElement.scrollTop || 0) <= 0 && e.touches.length === 1 && !document.querySelector('dialog[open]'); y0 = ok ? e.touches[0].clientY : null; dy = 0 }, { passive: true });
+      document.addEventListener('touchmove', e => { if (y0 == null) return; dy = e.touches[0].clientY - y0; if (dy > 12) show(dy * 0.6, t(dy > 120 ? 'pull_release' : 'pull_down')); else hide() }, { passive: true });
+      document.addEventListener('touchend', async () => { if (y0 == null) return; const go_ = dy > 120; y0 = null; if (!go_) { hide(); return } show(80, t('working')); await autoSync(true); hide(); render(); toast(st && st.syncErr ? t(st.syncErr === 'cle' ? 'auto_badkey' : 'auto_net') : t('pull_done', { h: madeTxt() })) });
+    })();
+    /* l'application ouverte se tient à jour toute seule (toutes les 5 minutes) */
+    setInterval(() => { if (key && !document.hidden) autoSync(false) }, 5 * 60e3);
+  }
+
+  /* ---------- vues communes : notes et données ---------- */
+  function vNotes(pref) {
+    const open = st.notes.filter(n => !n.done), done = st.notes.filter(n => n.done);
+    const doms = Object.entries(cfg.noteDomains);
+    const p = pref && typeof pref === 'object' ? pref : {};
+    const row = n => `<div class="row"><div class="m"><small>${fmtD(n.d.slice(0, 10))} · ${n.d.slice(11, 16)}${n.dom && cfg.noteDomains[n.dom] ? ' · ' + t(cfg.noteDomains[n.dom]) : ''}${n.ref ? ' · ' + esc(n.ref.label) : ''}</small><span class="txt" ${n.done ? 'style="text-decoration:line-through;opacity:.6"' : ''}>${esc(n.text)}</span>${n.od ? `<small><span class="chip ok">${lang() === 'de' ? '→ OneDrive' : '→ OneDrive'}</span></small>` : ''}${notesAuto() ? `<small>${n.sent ? `<span class="chip ok">${t('note_sent')}</span>` : `<span class="chip amber">${t('note_wait')}</span>`}</small>` : ''}</div>
+      <div class="s"><button class="btn sm" data-a="notedone" data-id="${n.id}">${n.done ? t('reopen') : t('done')}</button><button class="btn sm danger" data-a="notedel" data-id="${n.id}">${t('del')}</button></div></div>`;
+    return `<h1>${t('notes')}</h1>
+    <form class="card" id="notef" data-ref='${p.ref ? esc(JSON.stringify(p.ref)) : ''}'>
+      ${p.ref ? `<div class="small"><span class="chip ok">${esc(p.ref.label)}</span></div>` : ''}
+      ${cfg.askWho ? `<label for="notewho" class="small muted">${lang() === 'de' ? 'Ihr Name (steht bei jeder Notiz)' : 'Votre nom (figure sur chaque note)'}</label><input id="notewho" type="text" autocomplete="name" value="${esc(st.who || '')}" placeholder="${lang() === 'de' ? 'z. B. P. Muster' : 'p. ex. P. Dupont'}">` : ''}
+      <label for="notetext" class="small muted">${t('note_new')}</label>
+      <textarea id="notetext" placeholder="${esc(t('note_ph'))}"></textarea>
+      <div class="bar" style="align-items:center"><select id="notedom" style="flex:1;min-width:150px"><option value="">${t('no_domain')}</option>${doms.map(([k, l]) => `<option value="${k}" ${p.dom === k ? 'selected' : ''}>${esc(t(l))}</option>`).join('')}</select><button class="btn pri" type="button" data-a="noteadd">${t('save')}</button></div>
+    </form>
+    <section class="sec"><div class="sec-h"><h3>${t('to_handle')} · ${open.length}</h3></div>
+      <div class="list">${open.length ? open.map(row).join('') : `<div class="empty">${t('no_notes')}</div>`}</div></section>
+    <section class="card"><b>${t('notes_send')}</b>${(() => { const s = notesState(); return `<p class="note ${s.ok ? '' : 'warn'}">${s.ok ? '✓ ' : '⚠ '}${esc(s.txt)}</p>` })()}${cfg.autoSync && !st.syncKey ? `<label for="lienkey" class="small"><b>${lang() === 'de' ? 'Verbindungsschlüssel (einmal eingeben):' : 'Clé de liaison (à taper une seule fois) :'}</b></label><input id="lienkey" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="XXXX-XXXX-XXXX-XXXX-XXXX-XXXX"><div class="bar"><button class="btn pri" data-a="link" type="button">${lang() === 'de' ? 'Verbinden' : 'Relier'}</button></div><span class="small muted">${lang() === 'de' ? 'Den Schlüssel bzw. Link gibt der Prior.' : 'La clé (ou le lien) est donnée par le prieur.'}</span>` : ''}<div class="bar"><button class="btn pri" data-a="notesendnow" type="button">${lang() === 'de' ? 'Jetzt senden' : 'Envoyer maintenant'}</button></div><span class="small muted">${notesAuto() ? t('notes_auto') : t('notes_send_txt')}</span></section>
+    <details class="card" ${notesAuto() && !st.notesErr ? '' : 'open'}><summary class="small">${lang() === 'de' ? 'Andere Wege (OneDrive, kopieren)' : 'Autres moyens (OneDrive, copier)'}</summary>
+        <div><b>${lang() === 'de' ? 'An den Computer senden' : 'Envoyer à l’ordinateur'}</b><span class="small muted">${lang() === 'de' ? 'Ein Tipp: «Über OneDrive senden», dann im Menü «OneDrive» und den Ordner Natel › Notes wählen. Der Computer übernimmt die Notizen von selbst.' : 'Un geste : « Envoyer par OneDrive », puis choisir « OneDrive » et le dossier Natel › Notes. L’ordinateur reprend les notes tout seul.'}</span><div class="bar"><button class="btn pri" data-a="noteod" type="button">${lang() === 'de' ? 'Über OneDrive senden' : 'Envoyer par OneDrive'} (${st.notes.filter(n => !n.done && !n.od).length})</button></div></div>
+
+      <div class="bar"><button class="btn" data-a="copy" data-from="notesexport">${t('copy_all')}</button>${dl || navigator.share ? `<button class="btn" data-a="notesfile">${navigator.share && !dl ? t('share') : t('save_file')}</button>` : ''}</div>
+      <textarea id="notesexport" readonly hidden>${esc(notesText(true))}</textarea></details>
+    ${done.length ? `<section class="sec"><div class="sec-h"><h3>${t('handled')} · ${done.length}</h3><button class="linkbtn" data-a="notepurge">${t('purge_done')}</button></div><div class="list">${done.map(row).join('')}</div></section>` : ''}`;
+  }
+  async function noteActions(a, el) {
+    if (a === 'noteadd') { const tx = document.getElementById('notetext').value.trim(); if (!tx) { toast(t('note_empty')); return } const r = document.getElementById('notef').dataset.ref; await addNote(tx, document.getElementById('notedom').value, r ? JSON.parse(r) : null); view.a = null; render(); toast(t('note_saved')); pushNotes(); return true }
+    if (a === 'notedone') { const n = st.notes.find(x => x.id === el.dataset.id); if (n) { n.done = !n.done; await save(); render() } return true }
+    if (a === 'notedel') { if (el.dataset.sure !== '1') { el.dataset.sure = '1'; el.textContent = t('del_sure'); return true } st.notes = st.notes.filter(x => x.id !== el.dataset.id); await save(); render(); return true }
+    if (a === 'notepurge') { st.notes = st.notes.filter(x => !x.done); await save(); render(); return true }
+    if (a === 'notesfile') { const txt = notesText(true); try { if (dl) await dl.save({ filename: `${cfg.id}-notes-${today()}.txt`, data: txt }); else await navigator.share({ title: cfg.name + ' – ' + t('notes'), text: txt }) } catch (e) { if (e && e.name !== 'AbortError') toast(t('save_declined')) } return true }
+    if (a === 'notefor') { go('notes', { ref: { label: el.dataset.label, id: el.dataset.id || '' }, dom: el.dataset.dom || '' }, true); setTimeout(() => document.getElementById('notetext')?.focus(), 60); return true }
+    return false;
+  }
+
+  function vData() {
+    const S = cfg.sources.map(s => { const i = srcInfo(s.key); const age = i ? diffDays((i.fileDate || i.importedAt).slice(0, 10), today()) : null;
+      return `<div class="row"><div class="m"><b>${esc(t(s.label))}</b><small>${esc(t(s.where))}</small>${i ? `<small>${t('file_of')} ${fmtD((i.fileDate || i.importedAt).slice(0, 10))} · ${t('loaded_on')} ${fmtD(i.importedAt.slice(0, 10))}</small>` : ''}</div>
+      <div class="s">${i ? `<span class="chip ${age > 7 ? 'amber' : 'ok'}">${age > 7 ? t('old_days', { n: age }) : t('up_to_date')}</span>` : `<span class="chip">${t('missing')}</span>`}</div></div>` }).join('');
+    const AUTO = !!(cfg.autoSync && st.syncKey);
+    const manual = `<section class="card"><b>${t(AUTO ? 'update_title_m' : 'update_title')}</b><span class="small muted">${AUTO ? t(cfg.manualTxt || 'update_txt_auto', { f: '<b>' + esc(cfg.bundle) + '</b>' }) : t('update_txt', { f: '<b>' + esc(cfg.bundle) + '</b>' })}</span>
+        <input type="file" id="filepick" accept=".json,application/json,text/plain" multiple hidden>
+        <button class="btn ${AUTO ? '' : 'pri'}" data-a="pick">${t('choose_files')}</button>${AUTO ? '' : `<span class="small muted">${t('other_files')}</span>`}</section>`;
+    return `<h1>${t('data')}</h1>
+      ${AUTO ? syncCard() + manual : manual + syncCard()}
+      <section class="sec"><h3>${t('sources')}</h3><div class="list">${S}</div></section>
+      ${memOnly ? `<p class="note warn">${t('mem_only')}</p>` : ''}
+      <section class="card"><b>${t('security')}</b><span class="small muted">${t('security_txt')}</span>
+        <div class="bar" id="biobar"></div><div class="bar"><button class="btn" data-a="lock">${t('lock_now')}</button><button class="btn danger" data-a="wipeask">${t('wipe_all')}</button></div>
+        <div id="wipeconf" hidden class="bar"><span class="small">${t('wipe_sure')}</span><button class="btn danger sm" data-a="wipe">${t('wipe_yes')}</button></div></section>
+      ${cfg.dataExtra ? cfg.dataExtra() : ''}`;
+  }
+  async function fillBioBar() {
+    const el = document.getElementById('biobar'); if (!el) return;
+    if (!bioPossible()) { el.innerHTML = `<span class="small muted">${t('bio_unavail')}</span>`; return }
+    el.innerHTML = (await hasBio()) ? `<span class="chip ok">${t('bio_on')}</span><button class="btn sm" data-a="biooff">${t('bio_off')}</button>` : `<button class="btn" data-a="bioon">${ICON.finger} ${t('bio_enable')}</button>`;
+  }
+
+  function vDossiers() {
+    const D = src('dossiers'); const L = lang();
+    if (!D) return `<h1>${t('dossiers')}</h1><div class="card"><b>${t('no_dossiers')}</b><span class="small muted">${t('no_dossiers_txt')}</span><button class="btn pri" data-a="tab" data-v="donnees">${t('load_now')}</button></div>`;
+    const lb = x => x[L] || x.fr || x.de || '';
+    return `<h1>${t('dossiers')}</h1><p class="small muted" style="margin:0">${t('dossiers_txt')}</p>
+      ${D.groups.map(g => `<section class="sec"><h3>${esc(lb(g))}</h3><div class="list">${(g.links || []).map(l => `<a class="row" href="${esc(l.url)}" target="_blank" rel="noopener"><div class="m"><b>${esc(lb(l))}</b>${l.sub ? `<small>${esc(l.sub)}</small>` : ''}</div><div class="s">${ICON.folder}</div></a>`).join('')}</div></section>`).join('')}`;
+  }
+
+  /* ---------- documents PDF (plans) ---------- */
+  async function getDocs() { if (docsMem) return docsMem; try { const o = await kvGet('docs'); if (o) docsMem = (await dec(o, key)).list } catch (e) { } return docsMem || [] }
+  let pdfLib = null;
+  function loadPdfLib() { if (pdfLib) return pdfLib; pdfLib = new Promise((res, rej) => { if (window.pdfjsLib) return res(window.pdfjsLib); const sc = document.createElement('script'); sc.src = 'pdf.min.js'; sc.onload = () => { window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'pdf.worker.min.js'; res(window.pdfjsLib) }; sc.onerror = () => { pdfLib = null; rej(new Error('pdfjs')) }; document.head.appendChild(sc) }); return pdfLib }
+  async function renderPdf(b64, el) {
+    el.innerHTML = `<p class="muted small">${t('working')}</p>`;
+    try {
+      const lib = await loadPdfLib(); const doc = await lib.getDocument({ data: unb64(b64) }).promise; el.innerHTML = '';
+      const w = Math.max(320, el.clientWidth || 360), dpr = Math.min(3, (window.devicePixelRatio || 1) * 1.6);
+      for (let i = 1; i <= doc.numPages; i++) {
+        const pg = await doc.getPage(i); const v0 = pg.getViewport({ scale: 1 }); const vp = pg.getViewport({ scale: (w * dpr) / v0.width });
+        const c = document.createElement('canvas'); c.width = Math.round(vp.width); c.height = Math.round(vp.height); c.style.cssText = 'width:100%;height:auto;display:block;background:#fff;border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,.15)';
+        el.appendChild(c); await pg.render({ canvasContext: c.getContext('2d'), viewport: vp }).promise;
+      }
+    } catch (e) { el.innerHTML = `<p class="note warn">${t('pdf_fail')}</p>` }
+  }
+
+  /* ---------- démarrage ---------- */
+  function start() {
+    cfg.onUnlock && cfg.onUnlock();
+    const h = location.hash.slice(1);
+    const hasData = cfg.sources.some(s => srcInfo(s.key));
+    view = { n: hasData ? (cfg.views[h] ? h : 'home') : 'donnees', a: null }; stack = []; render();
+    if (pendingLien && cfg.autoSync) { const k = pendingLien; pendingLien = null; linkWith(k) } else autoSync(true);
+  }
+  async function init(c) {
+    cfg = c;
+    try { const mm = location.hash.match(/[#&]me=([A-Za-z]{2,6})/); if (mm) localStorage.setItem('mywil-me', mm[1].toUpperCase()) } catch (e) { }
+    try { const m = location.hash.match(/lien=([A-Za-z0-9-]{24,40})/); if (m) { pendingLien = m[1]; history.replaceState(null, '', location.pathname + location.search) } } catch (e) { }
+    cfg.views.notes = vNotes; cfg.views.donnees = vData; cfg.views.dossiers = vDossiers; cfg.sources = cfg.sources.concat([{ key: 'dossiers', label: 'src_dossiers', where: 'src_dossiers_where' }]);
+    const userActions = cfg.actions || {};
+    cfg.actions = new Proxy(userActions, { get(o, a) { if (o[a]) return o[a]; if (['noteadd', 'notedone', 'notedel', 'notepurge', 'notesfile', 'notefor'].includes(a)) return (el, e) => noteActions(a, el, e); if (a === 'notesendnow') return () => sendNow(); if (a === 'noteod') return () => shareOneDrive(); if (a === 'syncnow') return async () => { toast(t('working')); st.syncMade = ''; await autoSync(true); render() }; if (a === 'link') return () => linkWith(document.getElementById('lienkey')?.value); if (a === 'unlink') return async () => { delete st.syncKey; delete st.syncFile; delete st.level; delete st.zugang; delete st.levelName; st.syncErr = ''; await save(); render() }; if (a === 'wipeask') return () => { document.getElementById('wipeconf').hidden = false }; if (a === 'wipe') return wipe; if (a === 'bioon') return async () => { try { await bioEnable(); toast(t('bio_done')) } catch (e) { toast(e && e.message === 'noprf' ? t('bio_noprf') : t('bio_fail')) } fillBioBar() }; if (a === 'biooff') return async () => { await bioDisable(); fillBioBar() }; return undefined } });
+    document.title = cfg.name;
+    bind();
+    renderLock();
+    try { if (window.claude?.use) { claude.use('downloads').then(d => { dl = d; if (key && view.n === 'notes') render() }).catch(() => { }) } } catch (e) { }
+  }
+  return { init, getDocs, renderPdf, esc, t, lang, today, iso, parse, addDays, diffDays, fmtD, fmtLong, wd, mon, chf, norm, src, srcInfo, ui, go, render, toast, save, derive, unb64, b64, addNote, pushNotes, /* (2026-11-11) für die Bibliothek-App */ get st() { return st }, get view() { return view } };
+})();
+
+const ICON = {
+  home: '<svg viewBox="0 0 24 24"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></svg>',
+  cal: '<svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>',
+  people: '<svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><circle cx="17" cy="9" r="2.5"/><path d="M16 14.2c2.8.3 5 2.6 5 5.8"/></svg>',
+  note: '<svg viewBox="0 0 24 24"><path d="M5 3h10l4 4v14H5z"/><path d="M14 3v5h5M8 12h8M8 16h6"/></svg>',
+  more: '<svg viewBox="0 0 24 24"><rect x="4" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.5"/></svg>',
+  lock: '<svg viewBox="0 0 24 24" width="18" height="18"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>',
+  cross: '<svg viewBox="0 0 24 24"><path d="M12 3v18M7 8h10"/></svg>',
+  check: '<svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg>',
+  book: '<svg viewBox="0 0 24 24"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 19V5M8 7h7"/></svg>',
+  group: '<svg viewBox="0 0 24 24"><circle cx="12" cy="7" r="3"/><circle cx="5" cy="10" r="2.2"/><circle cx="19" cy="10" r="2.2"/><path d="M7 20c0-2.8 2.2-5 5-5s5 2.2 5 5M1.5 18c.3-2 1.7-3.5 3.5-3.5M22.5 18c-.3-2-1.7-3.5-3.5-3.5"/></svg>',
+  bed: '<svg viewBox="0 0 24 24"><path d="M3 18V7M3 14h18v4M21 14v-3a3 3 0 0 0-3-3h-7v6"/><circle cx="7" cy="11" r="2"/></svg>',
+  car: '<svg viewBox="0 0 24 24"><path d="M5 16V12l2-5h10l2 5v4z"/><path d="M5 12h14"/><circle cx="8" cy="16.5" r="1.6"/><circle cx="16" cy="16.5" r="1.6"/></svg>',
+  data: '<svg viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5"/><path d="M4 17v3h16v-3"/></svg>',
+  phone: '<svg viewBox="0 0 24 24"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 6 6L16 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2"/></svg>',
+  cash: '<svg viewBox="0 0 24 24"><rect x="2.5" y="6" width="19" height="12" rx="2"/><circle cx="12" cy="12" r="2.6"/><path d="M6 9.5v5M18 9.5v5"/></svg>',
+  flag: '<svg viewBox="0 0 24 24"><path d="M5 21V4M5 4h11l-2 4 2 4H5"/></svg>',
+  finger: '<svg viewBox="0 0 24 24" width="20" height="20"><path d="M12 11v4c0 2.5-.8 4.5-2 6"/><path d="M8.5 9.5A3.5 3.5 0 0 1 15.5 11v2c0 3-.7 5.4-1.8 7.4"/><path d="M5.5 15.5c.3-1.4.5-2.9.5-4.5a6 6 0 0 1 12 0v1.5c0 2-.2 3.8-.7 5.5"/><path d="M4 8.5A9 9 0 0 1 20.3 7"/></svg>',
+  folder: '<svg viewBox="0 0 24 24" width="20" height="20"><path d="M3 6.5A1.5 1.5 0 0 1 4.5 5H9l2 2h8.5A1.5 1.5 0 0 1 21 8.5v9a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 17.5z"/></svg>',
+  link: '<svg viewBox="0 0 24 24"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg>'
+};
+
+/* Textes communs (FR / DE) */
+const CORE_T = {
+  fr: {
+    nav: 'Navigation', back: 'Retour', lock: 'Verrouiller', lock_now: 'Verrouiller maintenant', code: 'Code de verrouillage', code_new: 'Choisissez un code de verrouillage (au moins 6 chiffres, pas 123456 ni votre date de naissance)', code_short6: 'Au moins 6 caractères.', code_again: 'Répétez le code', unlock: 'Ouvrir', create: 'Créer et continuer',
+    lock_intro: 'Entrez votre code pour ouvrir les données de ce Natel.', first_intro: 'Première ouverture sur ce Natel.', first_note: 'Le code protège les données enregistrées sur ce Natel. Sans lui, elles ne peuvent pas être lues. Il n’est enregistré nulle part : si vous l’oubliez, il suffit de tout effacer et de recharger les fichiers.',
+    code_short: 'Au moins 4 caractères.', code_mismatch: 'Les deux codes ne sont pas identiques.', code_wrong: 'Code incorrect.', working: 'Un instant…', pull_down: 'Tirer pour actualiser', pull_release: 'Relâcher pour actualiser', pull_done: 'À jour – données de {h}', forgot: 'Code oublié ?', forgot_txt: 'Les données de ce Natel ne peuvent pas être récupérées sans le code. Vous pouvez tout effacer ici, puis recharger les fichiers depuis OneDrive. Rien n’est perdu sur l’ordinateur.', wipe_all: 'Tout effacer de ce Natel', wipe_sure: 'Effacer toutes les données et les notes de ce Natel ?', wipe_yes: 'Oui, effacer',
+    note_sent: '📤 envoyée à l’ordinateur', note_wait: 'en attente d’envoi', notes_arrived: '{n} note(s) arrivée(s) sur l’ordinateur.', notes_auto: 'Les notes partent toutes seules vers l’ordinateur (page d’accueil, « Notes du Natel »). Une fois arrivées, elles disparaissent d’ici.', auto_title_n: 'Notes vers l’ordinateur', auto_on_n: 'Les notes prises ici partent toutes seules vers l’ordinateur, puis disparaissent d’ici. Dernière vérification : {d}.', auto_how_n: 'Une seule fois : ouvrir le lien MyWil reçu du prieur (ou scanner son code QR). Ou taper ici la clé de liaison.', auto_linked_n: 'Natel relié : les notes partiront toutes seules vers l’ordinateur.', notes_tokbad: 'GitHub refuse l’envoi des notes : renouveler la clé des notes sur l’ordinateur (Mes ordinateurs › Natel).', update_title_m: 'Charger un fichier à la main', update_txt_auto: 'Plus besoin : tout arrive tout seul. Seulement pour forcer une mise à jour : choisir {f} dans OneDrive FSSPX › Natel.', auto_title: 'Mise à jour automatique', auto_active: 'active', auto_on: 'À chaque ouverture, l’application va chercher les nouvelles données préparées par l’ordinateur. Dernière vérification : {d}.', auto_net: 'Pas de connexion au dernier essai : les données déjà sur ce Natel restent utilisables.', auto_badkey: 'Ce Natel n’a plus accès à MyWil (accès retiré ou nouvelle clé). Demandez un nouveau lien au prieur, puis touchez « Arrêter » et ouvrez le nouveau lien.', auto_now: 'Vérifier maintenant', auto_off: 'Arrêter', auto_how: 'Une seule fois : ouvrir le lien MyWil reçu du prieur (ou scanner son code QR). Ou taper ici la clé de liaison.', auto_link: 'Relier ce Natel', auto_linked: 'Natel relié : les données se mettront à jour toutes seules.', auto_badfmt: 'Clé incomplète : 24 lettres et chiffres.', auto_done: 'Données mises à jour automatiquement.', store_fail: 'Ce Natel ne permet pas d’enregistrer : les données restent seulement jusqu’à la fermeture.', imported: 'Chargé : {n}', ignored: '{n} fichier(s) non reconnu(s)', nothing_imported: 'Aucun fichier reconnu. Choisissez les fichiers indiqués ci-dessous.',
+    notes: 'Notes', note_new: 'Nouvelle note', note_ph: 'Ce que vous voulez reprendre à l’ordinateur…', no_domain: 'Sans domaine', save: 'Enregistrer', to_handle: 'À reprendre', handled: 'Reprises', no_notes: 'Aucune note en attente.', done: 'Reprise', reopen: 'Rouvrir', del: 'Supprimer', del_sure: 'Sûr ?', purge_done: 'Supprimer les notes reprises',
+    notes_send: 'Envoyer les notes vers l’ordinateur', notes_send_txt: 'Copiez les notes en attente puis collez-les dans un courriel, OneNote ou Teams ; ou enregistrez-les comme fichier dans OneDrive.', copy_all: 'Copier les notes', save_file: 'Enregistrer comme fichier', copied: 'Copié.', copy_manual: 'Sélectionnez le texte et copiez-le.', save_declined: 'Enregistrement annulé.', note_empty: 'La note est vide.', note_saved: 'Note enregistrée.',
+    data: 'Données', update_title: 'Mettre à jour les données', update_txt: 'Touchez le bouton, puis choisissez dans OneDrive FSSPX › dossier « Natel » le fichier {f}. L’ordinateur le tient à jour tout seul. Il reste sur ce Natel, chiffré.', other_files: 'On peut aussi choisir directement les fichiers d’origine, un ou plusieurs à la fois.', stale: 'Les données datent d’il y a {n} jours. Touchez ici pour les mettre à jour.', choose_files: 'Choisir les fichiers', sources: 'Fichiers', file_of: 'Fichier du', loaded_on: 'chargé le', up_to_date: 'à jour', old_days: 'il y a {n} jours', missing: 'pas encore chargé',
+    security: 'Sécurité', security_txt: 'L’application se verrouille seule après 10 minutes en arrière-plan. Les données ne quittent pas ce Natel.', mem_only: 'Ce navigateur n’autorise pas l’enregistrement : il faudra recharger les fichiers à chaque ouverture.', view_err: 'Cette page n’a pas pu s’afficher.',
+    bio_open: 'Ouvrir avec l’empreinte', bio_fail: 'L’empreinte n’a pas fonctionné. Entrez le code.', bio_unavail: 'L’empreinte n’est possible que dans l’application installée sur le Natel.', bio_on: 'Empreinte activée', bio_off: 'Désactiver', bio_enable: 'Activer l’empreinte digitale', bio_done: 'Empreinte activée. La prochaine fois, ouvrez avec le doigt.', bio_noprf: 'Ce téléphone ne permet pas encore l’ouverture par empreinte ici. Le code reste nécessaire.', share: 'Envoyer…',
+    dossiers: 'Dossiers', dossiers_txt: 'Un toucher ouvre le dossier dans SharePoint ou OneDrive, avec votre compte. Rien n’est copié sur le Natel.', no_dossiers: 'La liste des dossiers n’est pas encore chargée.', no_dossiers_txt: 'Chargez « Dossiers_Natel.json » dans Données.', src_dossiers: 'Liste des dossiers', src_dossiers_where: 'Dossiers_Natel.json (à côté de vos autres données)',
+    src_plans: 'Plans (PDF)', pdf_fail: 'Ce document n’a pas pu s’afficher.',
+    search: 'Rechercher…', nores: 'Aucun résultat.', all: 'Tout', open_in_maps: 'Itinéraire', copy: 'Copier', note_for: 'Note', today: 'Aujourd’hui', tomorrow: 'Demain', more: 'Plus', home: 'Accueil', see_all: 'Tout voir', no_data_yet: 'Pas encore de données.', load_now: 'Charger les fichiers'
+  },
+  de: {
+    nav: 'Navigation', back: 'Zurück', lock: 'Sperren', lock_now: 'Jetzt sperren', code: 'Sperrcode', code_new: 'Wählen Sie einen Sperrcode (mindestens 6 Ziffern, nicht 123456 oder Ihr Geburtsdatum)', code_short6: 'Mindestens 6 Zeichen.', code_again: 'Code wiederholen', unlock: 'Öffnen', create: 'Anlegen und weiter',
+    lock_intro: 'Geben Sie Ihren Code ein, um die Daten auf diesem Handy zu öffnen.', first_intro: 'Erstes Öffnen auf diesem Handy.', first_note: 'Der Code schützt die auf diesem Handy gespeicherten Daten. Ohne ihn sind sie nicht lesbar. Er wird nirgends gespeichert: Wenn Sie ihn vergessen, alles löschen und die Dateien neu laden.',
+    code_short: 'Mindestens 4 Zeichen.', code_mismatch: 'Die beiden Codes stimmen nicht überein.', code_wrong: 'Falscher Code.', working: 'Einen Moment…', pull_down: 'Ziehen zum Aktualisieren', pull_release: 'Loslassen zum Aktualisieren', pull_done: 'Aktuell – Daten von {h}', forgot: 'Code vergessen?', forgot_txt: 'Ohne Code lassen sich die Daten dieses Handys nicht wiederherstellen. Sie können hier alles löschen und die Dateien aus OneDrive neu laden. Auf dem Computer geht nichts verloren.', wipe_all: 'Alles auf diesem Handy löschen', wipe_sure: 'Alle Daten und Notizen auf diesem Handy löschen?', wipe_yes: 'Ja, löschen',
+    note_sent: '📤 an den Computer gesendet', note_wait: 'wartet auf Versand', notes_arrived: '{n} Notiz(en) im Computer angekommen.', notes_auto: 'Die Notizen gehen von selbst an den Computer (Startseite, «Notizen vom Handy»). Sobald sie angekommen sind, verschwinden sie hier.', auto_title_n: 'Notizen an den Computer', auto_on_n: 'Die hier erfassten Notizen gehen von selbst an den Computer und verschwinden dann hier. Letzte Prüfung: {d}.', auto_how_n: 'Einmalig: den MyWil-Link vom Prior öffnen (oder seinen QR-Code scannen). Oder hier den Verbindungsschlüssel eingeben.', auto_linked_n: 'Handy verbunden: die Notizen gehen von selbst an den Computer.', notes_tokbad: 'GitHub verweigert den Versand der Notizen: den Notizen-Schlüssel am Computer erneuern.', update_title_m: 'Datei von Hand laden', update_txt_auto: 'Nicht mehr nötig: alles kommt von selbst. Nur um eine Aktualisierung zu erzwingen: {f} in OneDrive FSSPX › Natel wählen.', auto_title: 'Automatische Aktualisierung', auto_active: 'aktiv', auto_on: 'Bei jedem Öffnen holt die App die neuen Daten, die der Computer vorbereitet. Letzte Prüfung: {d}.', auto_net: 'Beim letzten Versuch keine Verbindung: die Daten auf diesem Handy bleiben nutzbar.', auto_badkey: 'Dieses Handy hat keinen Zugang mehr zu MyWil (Zugang entzogen oder neuer Schlüssel). Beim Prior einen neuen Link verlangen, dann «Beenden» antippen und den neuen Link öffnen.', auto_now: 'Jetzt prüfen', auto_off: 'Beenden', auto_how: 'Einmalig: den MyWil-Link vom Prior öffnen (oder seinen QR-Code scannen). Oder hier den Verbindungsschlüssel eingeben.', auto_link: 'Handy verbinden', auto_linked: 'Handy verbunden: die Daten aktualisieren sich von selbst.', auto_badfmt: 'Schlüssel unvollständig: 24 Buchstaben und Ziffern.', auto_done: 'Daten automatisch aktualisiert.', store_fail: 'Dieses Handy erlaubt kein Speichern: Die Daten bleiben nur bis zum Schliessen.', imported: 'Geladen: {n}', ignored: '{n} Datei(en) nicht erkannt', nothing_imported: 'Keine Datei erkannt. Wählen Sie die unten genannten Dateien.',
+    notes: 'Notizen', note_new: 'Neue Notiz', note_ph: 'Was Sie am Computer erledigen wollen…', no_domain: 'Ohne Bereich', save: 'Speichern', to_handle: 'Zu erledigen', handled: 'Erledigt', no_notes: 'Keine offenen Notizen.', done: 'Erledigt', reopen: 'Wieder öffnen', del: 'Löschen', del_sure: 'Sicher?', purge_done: 'Erledigte Notizen löschen',
+    notes_send: 'Notizen an den Computer senden', notes_send_txt: 'Offene Notizen kopieren und in eine E-Mail, OneNote oder Teams einfügen; oder als Datei in OneDrive speichern.', copy_all: 'Notizen kopieren', save_file: 'Als Datei speichern', copied: 'Kopiert.', copy_manual: 'Text markieren und kopieren.', save_declined: 'Speichern abgebrochen.', note_empty: 'Die Notiz ist leer.', note_saved: 'Notiz gespeichert.',
+    data: 'Daten', update_title: 'Daten aktualisieren', update_txt: 'Tippen Sie auf die Schaltfläche und wählen Sie in OneDrive FSSPX › Ordner «Natel» die Datei {f}. Der Computer hält sie selbst aktuell. Sie bleibt verschlüsselt auf diesem Handy.', other_files: 'Man kann auch direkt die ursprünglichen Dateien wählen, eine oder mehrere.', stale: 'Die Daten sind {n} Tage alt. Hier tippen zum Aktualisieren.', choose_files: 'Dateien wählen', sources: 'Dateien', file_of: 'Datei vom', loaded_on: 'geladen am', up_to_date: 'aktuell', old_days: 'vor {n} Tagen', missing: 'noch nicht geladen',
+    security: 'Sicherheit', security_txt: 'Die App sperrt sich nach 10 Minuten im Hintergrund von selbst. Die Daten verlassen dieses Handy nicht.', mem_only: 'Dieser Browser erlaubt kein Speichern: Die Dateien müssen bei jedem Öffnen neu geladen werden.', view_err: 'Diese Seite konnte nicht angezeigt werden.',
+    bio_open: 'Mit Fingerabdruck öffnen', bio_fail: 'Der Fingerabdruck hat nicht funktioniert. Code eingeben.', bio_unavail: 'Fingerabdruck geht nur in der auf dem Handy installierten App.', bio_on: 'Fingerabdruck aktiv', bio_off: 'Ausschalten', bio_enable: 'Fingerabdruck einschalten', bio_done: 'Fingerabdruck eingeschaltet. Nächstes Mal mit dem Finger öffnen.', bio_noprf: 'Dieses Handy erlaubt hier noch kein Öffnen per Fingerabdruck. Der Code bleibt nötig.', share: 'Senden…',
+    dossiers: 'Ordner', dossiers_txt: 'Ein Tippen öffnet den Ordner in SharePoint oder OneDrive, mit Ihrem Konto. Nichts wird auf das Handy kopiert.', no_dossiers: 'Die Ordnerliste ist noch nicht geladen.', no_dossiers_txt: '«Dossiers_Natel.json» unter Daten laden.', src_dossiers: 'Ordnerliste', src_dossiers_where: 'Dossiers_Natel.json (neben Ihren anderen Daten)',
+    src_plans: 'Pläne (PDF)', pdf_fail: 'Dieses Dokument konnte nicht angezeigt werden.',
+    search: 'Suchen…', nores: 'Keine Treffer.', all: 'Alle', open_in_maps: 'Route', copy: 'Kopieren', note_for: 'Notiz', today: 'Heute', tomorrow: 'Morgen', more: 'Mehr', home: 'Start', see_all: 'Alle anzeigen', no_data_yet: 'Noch keine Daten.', load_now: 'Dateien laden'
+  }
+};
+
+</script>
+<script>
+'use strict';
+/* Bibliothek Wil – App für den Bibliothekar (Handy und PC). Eigene Seite, eigener verschlüsselter Paket-Schlüssel (Stufe «bibliothekar»):
+   der Schlüssel öffnet nur die Bibliothek, keine anderen Daten von Wil. Ausleihen, Rückgaben, Verlängerungen und neue Leser gehen
+   als verschlüsselte Notizen an den Computer des Priorats; die Bibliotheks-App dort trägt sie ein.
+   Auf dem Handy: nur Name, Ort und Kategorie der Leser (keine Adressen, Telefone, E-Mails). */
+(function () {
+
+  const T = {
+    fr: Object.assign({}, CORE_T.fr, {
+      app_sub: 'Bibliothèque du prieuré', src_bib: 'Bibliothèque', src_bib_where: 'préparée par l’ordinateur du prieuré',
+      update_txt_bib: 'Tout arrive tout seul depuis l’ordinateur du prieuré.', b_home: 'Livres', b_lend: 'Prêter', b_back: 'Retours', b_log: 'Envoi',
+      search_ph: 'Titre, auteur, cote, mot-clé…', lent: 'prêtés', late: 'en retard', next_day: 'Prochain jour de prêt', first_sun: '1er dimanche du mois',
+      avail: 'disponible', is_lent: 'prêté', not_lend: 'exclu du prêt', lost: 'introuvable', where: 'Emplacement', reader: 'Lecteur', readers: 'Lecteurs',
+      pick_reader: 'Choisir le lecteur', pick_books: 'Choisir le(s) livre(s)', reader_ph: 'Nom ou n° de lecteur…', book_ph: 'Cote ou titre…', new_reader: 'Nouveau lecteur',
+      vn: 'Prénom', nn: 'Nom', ort: 'Localité', kat: 'Catégorie', lend_go: 'Enregistrer le prêt', lend_ok: 'Prêt enregistré – il part vers l’ordinateur.',
+      back_go: 'Retour', back_ok: 'Retour enregistré.', ext: '+1 mois', ext_ok: 'Prolongation enregistrée.', due: 'à rendre le', since: 'depuis le',
+      max_warn: 'Selon le règlement : au plus {n} livre(s) pour cette catégorie (déjà : {h}).', excl_warn: 'exclu du prêt (jaune / Giftschrank)', already: 'déjà prêté',
+      pending: 'en route vers l’ordinateur', no_data_b: 'La bibliothèque n’est pas encore sur cet appareil.', none_lent: 'Aucun livre prêté.', put_back: 'À remettre à sa place :',
+      reader_saved: 'Lecteur noté – il sera inscrit à l’ordinateur.', choose_first: 'Choisissez un lecteur et au moins un livre.', show_more: 'Afficher plus', results: 'résultats',
+      fresh_at: 'État du {d} à {h}', fresh_today: 'État de {h}', subj: 'Rubrique', lend_this: 'Prêter ce livre', all_lent: 'Tous les livres prêtés', overdue_first: 'En retard d’abord'
+    }),
+    de: Object.assign({}, CORE_T.de, {
+      app_sub: 'Bibliothek des Priorats', src_bib: 'Bibliothek', src_bib_where: 'vom Computer des Priorats vorbereitet',
+      update_txt_bib: 'Alles kommt von selbst vom Computer des Priorats.', b_home: 'Bücher', b_lend: 'Ausleihen', b_back: 'Rückgabe', b_log: 'Senden',
+      search_ph: 'Titel, Autor, Signatur, Stichwort…', lent: 'ausgeliehen', late: 'überfällig', next_day: 'Nächster Ausleihtag', first_sun: '1. Sonntag im Monat',
+      avail: 'vorhanden', is_lent: 'ausgeliehen', not_lend: 'nicht ausleihbar', lost: 'unauffindbar', where: 'Standort', reader: 'Leser', readers: 'Leser',
+      pick_reader: 'Leser wählen', pick_books: 'Buch / Bücher wählen', reader_ph: 'Name oder Lesernummer…', book_ph: 'Signatur oder Titel…', new_reader: 'Neuer Leser',
+      vn: 'Vorname', nn: 'Name', ort: 'Ort', kat: 'Kategorie', lend_go: 'Ausleihe eintragen', lend_ok: 'Ausleihe eingetragen – sie geht an den Computer.',
+      back_go: 'Zurück', back_ok: 'Rückgabe eingetragen.', ext: '+1 Monat', ext_ok: 'Verlängerung eingetragen.', due: 'zurück bis', since: 'seit',
+      max_warn: 'Nach dem Reglement höchstens {n} Buch/Bücher für diese Kategorie (schon: {h}).', excl_warn: 'nicht ausleihbar (gelb / Giftschrank)', already: 'schon ausgeliehen',
+      pending: 'unterwegs zum Computer', no_data_b: 'Die Bibliothek ist noch nicht auf diesem Gerät.', none_lent: 'Keine Bücher ausgeliehen.', put_back: 'An seinen Platz stellen:',
+      reader_saved: 'Leser notiert – er wird am Computer eingetragen.', choose_first: 'Bitte Leser und mindestens ein Buch wählen.', show_more: 'Mehr zeigen', results: 'Treffer',
+      fresh_at: 'Stand {d}, {h}', fresh_today: 'Stand {h}', subj: 'Fach', lend_this: 'Dieses Buch ausleihen', all_lent: 'Alle ausgeliehenen Bücher', overdue_first: 'Überfällige zuerst'
+    })
+  };
+  const t = (k, v) => M.t(k, v), esc = s => M.esc(s), L = (fr, de) => M.lang() === 'de' ? de : fr;
+  const pad = n => String(n).padStart(2, '0'), isoD = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`, today = () => isoD(new Date());
+  const pd = s => { const [y, m, d] = String(s).split('-').map(Number); return new Date(y, (m || 1) - 1, d || 1) };
+  const addM = (s, m) => { const d = pd(s), day = d.getDate(); d.setDate(1); d.setMonth(d.getMonth() + m); d.setDate(Math.min(day, new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate())); return isoD(d) };
+  const chD = s => s ? String(s).slice(0, 10).split('-').reverse().join('.') : '';
+  const norm = s => String(s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/ß/g, 'ss');
+  const uid = () => Math.random().toString(36).slice(2, 9) + Date.now().toString(36).slice(-4);
+  const D = () => M.src('biblio');
+
+  /* ---------- Daten (Paket vom Computer) + eigene, noch nicht übernommene Buchungen ---------- */
+  let IX = null, IXmade = '';
+  function idx() { const d = D(); if (!d) return null; if (IX && IXmade === d.made) return IX;
+    const B = (d.b || []).map(r => ({ id: r[0], f: r[1], k: r[2], a: r[3], ti: r[4], ut: r[5], j: r[6], fl: r[7] || '' }));
+    IX = { B, byId: new Map(B.map(b => [String(b.id), b])), hay: new Map(B.map(b => [b.id, norm([b.f, b.k, b.a, b.ti, b.ut, b.j].join(' '))])) }; IXmade = d.made; return IX }
+  const sig = b => b ? `${b.f || ''} ${b.k || ''}`.trim() : '';
+  const book = id => idx()?.byId.get(String(id));
+  function journal() { const st = M.st; st.bj = st.bj || []; const done = new Set((D()?.angewandt) || []); st.bj = st.bj.filter(x => !done.has(x.id)); return st.bj }
+  function readers() { const R = (D()?.leser || []).slice(); for (const x of journal()) if (x.t === 'leser' && !R.some(r => r.id === x.lid)) R.push({ id: x.lid, n: [x.nn, x.vn].filter(Boolean).join(', '), o: x.ort, kat: x.kat, neu: 1 }); return R }
+  const reader = id => readers().find(r => String(r.id) === String(id));
+  const katOf = r => (D()?.kat || []).find(k => k.id === (r && r.kat)) || { mon: 2, max: 0 };
+  function loans() { let A = (D()?.ausl || []).map(x => Object.assign({}, x));
+    for (const x of journal().slice().reverse()) {
+      if (x.t === 'aus' && !A.some(a => String(a.b) === String(x.b))) A.push({ b: x.b, l: x.l, von: x.von, bis: addM(x.von, katOf(reader(x.l)).mon || 2), pend: 1 });
+      if (x.t === 'zur') A = A.filter(a => String(a.b) !== String(x.b));
+      if (x.t === 'ver') { const a = A.find(a => String(a.b) === String(x.b)); if (a) { a.bis = addM(a.bis && a.bis > today() ? a.bis : today(), 1); a.verl = 1; a.pend = 1 } }
+    } return A }
+  const loanOf = b => loans().find(a => String(a.b) === String(b.id));
+  const late = a => !a.bis || a.bis < today();
+  const excluded = b => /n/.test(b.fl) || /^U-/.test(b.f || '');
+  function status(b) { if (loanOf(b)) return ['amber', t('is_lent')]; if (/u/.test(b.fl)) return ['red', t('lost')]; if (excluded(b)) return ['', t('not_lend')]; return ['ok', t('avail')] }
+  function regal(b) { let best = null, bl = -1; for (const r of (D()?.regale || [])) for (let p of String(r.f || '').split(/[,;\s]+/)) { p = p.trim(); if (p && (b.f || '').startsWith(p) && p.length > bl) { best = r; bl = p.length } } return best }
+  function nextDay() { const n = new Date(); n.setHours(0, 0, 0, 0); const fs = (y, m) => { const d = new Date(y, m, 1); while (d.getDay()) d.setDate(d.getDate() + 1); return d }; let d = fs(n.getFullYear(), n.getMonth()); if (d < n) d = fs(n.getFullYear(), n.getMonth() + 1); return d }
+  async function book_note(x, text) { x.id = uid(); x.d = new Date().toISOString(); M.st.bj = journal(); M.st.bj.unshift(x); await M.addNote(text, 'biblio', { label: L('Bibliothèque', 'Bibliothek'), biblio: x }); M.pushNotes && M.pushNotes() }
+  const noB = () => `<div class="card"><b>${t('no_data_b')}</b><button class="btn pri" data-a="tab" data-v="donnees">${t('load_now')}</button></div>`;
+
+  /* ---------- Ansichten ---------- */
+  const bRow = b => { const s = status(b); return `<button class="row" data-a="go" data-v="buch" data-arg="${esc(b.id)}"><div class="m"><b>${esc(b.ti)}</b><small>${esc([b.a && b.a !== '---' ? b.a : '', b.j].filter(Boolean).join(' · '))}</small><small class="sig">${esc(sig(b))}</small></div><div class="s"><span class="chip ${s[0]}">${esc(s[1])}</span></div></button>` };
+  function search(q, n) { const I = idx(); const w = norm(q).split(/\s+/).filter(Boolean); if (!w.length) return []; const R = []; for (const b of I.B) { const h = I.hay.get(b.id); if (w.every(x => h.includes(x))) { R.push(b); if (R.length >= n) break } } return R }
+  function vHome() { if (!D()) return noB();
+    const A = loans(), lt = A.filter(late), q = M.ui.q || '', lim = +(M.ui.lim || 40), R = q ? search(q, lim + 1) : [], nd = nextDay();
+    return `<h1>${t('app_sub')}</h1>
+    <input class="field" type="search" id="bq" data-live="q" value="${esc(q)}" placeholder="${t('search_ph')}" autocomplete="off">
+    ${q ? `<div class="list" style="margin-top:10px">${R.slice(0, lim).map(bRow).join('') || `<div class="empty">${t('nores')}</div>`}</div>${R.length > lim ? `<button class="btn" data-a="more">${t('show_more')}</button>` : ''}` : `
+    <div class="bref" style="margin-top:12px"><button class="bt" data-a="tab" data-v="ausl">${ICON.book}<b>${t('b_lend')}</b></button><button class="bt" data-a="tab" data-v="rueck">${ICON.check}<b>${A.length}</b><small>${t('lent')}</small></button><button class="bt" data-a="tab" data-v="rueck"><b style="color:${lt.length ? 'var(--red)' : 'inherit'}">${lt.length}</b><small>${t('late')}</small></button><button class="bt">${ICON.cal}<b>${nd.getDate()}.${nd.getMonth() + 1}.</b><small>${t('next_day')}</small></button></div>
+    ${(D().regale || []).length ? `<h3>${t('where')}</h3><div class="list">${D().regale.map(r => `<div class="row"><div class="m"><b>${esc(r.name)}</b><small>${esc(r.f)}</small></div></div>`).join('')}</div>` : ''}`}`;
+  }
+  function vBuch(id) { const b = book(id); if (!b) return noB(); const s = status(b), lo = loanOf(b), r = regal(b), fn = (D().fach || {})[b.f] || '';
+    return `<h1 style="font-size:22px">${esc(b.ti)}</h1>${b.ut ? `<p class="small">${esc(b.ut)}</p>` : ''}<p class="muted">${esc(b.a || '')}${b.j ? ' · ' + esc(b.j) : ''}</p>
+    <section class="card"><dl class="kv"><dt>${L('Cote', 'Signatur')}</dt><dd><b>${esc(sig(b))}</b></dd><dt>${t('subj')}</dt><dd>${esc(fn)}</dd>
+      <dt>${t('where')}</dt><dd>${r ? '📍 ' + esc(r.name) : '–'}</dd><dt>${L('État', 'Stand')}</dt><dd><span class="chip ${s[0]}">${esc(s[1])}</span>${lo && lo.pend ? ` <small class="muted">${t('pending')}</small>` : ''}</dd>
+      ${lo ? `<dt>${t('reader')}</dt><dd>${esc(reader(lo.l)?.n || '?')}</dd><dt>${t('due')}</dt><dd style="${late(lo) ? 'color:var(--red);font-weight:600' : ''}">${chD(lo.bis) || '?'}</dd>` : ''}</dl></section>
+    <div class="acts">${lo ? `<button class="btn pri" data-a="back1" data-b="${esc(b.id)}">↩ ${t('back_go')}</button>${lo.verl ? '' : `<button class="btn" data-a="ext1" data-b="${esc(b.id)}">${t('ext')}</button>`}` : (!excluded(b) && !/u/.test(b.fl) ? `<button class="btn pri" data-a="lendthis" data-b="${esc(b.id)}">📖 ${t('lend_this')}</button>` : '')}</div>`;
+  }
+  let CUR = { l: null, bs: [] };
+  function vAusl() { if (!D()) return noB();
+    const rq = M.ui.rq || '', bq = M.ui.bq || '', l = CUR.l ? reader(CUR.l) : null;
+    const RR = rq ? readers().filter(r => norm([r.n, r.nr, r.o].join(' ')).includes(norm(rq))).slice(0, 12) : [];
+    const BB = bq ? search(bq, 12) : [];
+    const k = l ? katOf(l) : null, has = l ? loans().filter(a => String(a.l) === String(l.id)).length : 0;
+    const warn = []; if (l && k.max && has + CUR.bs.length > k.max) warn.push(t('max_warn', { n: k.max, h: has }));
+    for (const id of CUR.bs) { const b = book(id); if (!b) continue; if (excluded(b)) warn.push(sig(b) + ' : ' + t('excl_warn')); if (loanOf(b)) warn.push(sig(b) + ' : ' + t('already')) }
+    const katSel = (D().kat || []).map(x => `<option value="${esc(x.id)}">${esc(M.lang() === 'de' ? x.de : x.fr)}</option>`).join('');
+    return `<h1>${t('b_lend')}</h1>
+    <h3>1 · ${t('pick_reader')}</h3>
+    ${l ? `<div class="card" style="display:flex;justify-content:space-between;align-items:center"><div><b>👤 ${esc(l.n)}</b><small class="muted"> ${esc(l.nr || '')} ${esc(l.o || '')}</small></div><button class="btn" data-a="lclr">✕</button></div>`
+      : `<input class="field" type="search" data-live="rq" id="rq" value="${esc(rq)}" placeholder="${t('reader_ph')}" autocomplete="off"><div class="list">${RR.map(r => `<button class="row" data-a="lpick" data-id="${esc(r.id)}"><div class="m"><b>${esc(r.n)}</b><small>${esc([r.nr, r.o].filter(Boolean).join(' · '))}</small></div></button>`).join('')}</div>
+      <details class="card"><summary>＋ ${t('new_reader')}</summary><div style="display:grid;gap:8px;margin-top:8px"><input class="field" id="nvn" placeholder="${t('vn')}"><input class="field" id="nnn" placeholder="${t('nn')}"><input class="field" id="nort" placeholder="${t('ort')}"><select class="field" id="nkat">${katSel}</select><button class="btn pri" data-a="lnew">${t('save')}</button></div></details>`}
+    <h3>2 · ${t('pick_books')}</h3>
+    ${CUR.bs.map(id => { const b = book(id); return b ? `<div class="row"><div class="m"><b>${esc(b.ti)}</b><small class="sig">${esc(sig(b))}</small></div><button class="btn" data-a="bdel" data-id="${esc(id)}">✕</button></div>` : '' }).join('')}
+    <input class="field" type="search" data-live="bq" id="bq2" value="${esc(bq)}" placeholder="${t('book_ph')}" autocomplete="off">
+    <div class="list">${BB.map(b => `<button class="row" data-a="bpick" data-id="${esc(b.id)}"><div class="m"><b>${esc(b.ti)}</b><small class="sig">${esc(sig(b))}</small></div><div class="s"><span class="chip ${status(b)[0]}">${esc(status(b)[1])}</span></div></button>`).join('')}</div>
+    ${warn.map(w => `<p class="note warn">⚠ ${esc(w)}</p>`).join('')}
+    <button class="btn pri" data-a="lendgo" style="margin-top:12px;width:100%">📖 ${t('lend_go')}</button>`;
+  }
+  function vRueck() { if (!D()) return noB(); const q = M.ui.zq || '';
+    let A = loans().sort((a, b) => (a.bis || '').localeCompare(b.bis || ''));
+    if (q) A = A.filter(a => { const b = book(a.b), r = reader(a.l); return norm([sig(b), b?.ti, r?.n].join(' ')).includes(norm(q)) });
+    return `<h1>${t('b_back')}</h1><input class="field" type="search" data-live="zq" id="zq" value="${esc(q)}" placeholder="${t('search_ph')}" autocomplete="off">
+    ${M.ui.msg ? `<p class="note ok">${M.ui.msg}</p>` : ''}
+    <div class="list" style="margin-top:10px">${A.map(a => { const b = book(a.b) || { ti: '#' + a.b }, r = reader(a.l);
+      return `<div class="row"><div class="m"><b>${esc(b.ti)}</b><small class="sig">${esc(sig(b))}</small><small>👤 ${esc(r?.n || '?')} · ${t('due')} <span style="${late(a) ? 'color:var(--red);font-weight:600' : ''}">${chD(a.bis) || '?'}</span>${a.pend ? ' · ' + t('pending') : ''}</small></div><div class="s" style="display:flex;flex-direction:column;gap:4px"><button class="btn pri" data-a="back1" data-b="${esc(a.b)}">↩</button>${a.verl ? '' : `<button class="btn" data-a="ext1" data-b="${esc(a.b)}">+1</button>`}</div></div>` }).join('') || `<div class="empty">${t('none_lent')}</div>`}</div>`;
+  }
+
+  /* ---------- Eingangstür (wie MyWil): ohne gültigen persönlichen Link nichts ---------- */
+  const TOR = 'biblio-tor';
+  async function torHex(k) { return Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(k)))).map(x => x.toString(16).padStart(2, '0')).join('').slice(0, 20) }
+  async function torCheck(b, k) {
+    if (b.length < 100 || String.fromCharCode(b[0], b[1], b[2]) !== 'MT1') return false;
+    const base = await crypto.subtle.importKey('raw', new TextEncoder().encode(k), 'PBKDF2', false, ['deriveBits']);
+    const km = new Uint8Array(await crypto.subtle.deriveBits({ name: 'PBKDF2', salt: b.slice(3, 19), iterations: 100000, hash: 'SHA-256' }, base, 512));
+    const mk = await crypto.subtle.importKey('raw', km.slice(32), { name: 'HMAC', hash: 'SHA-256' }, false, ['verify']);
+    return crypto.subtle.verify('HMAC', mk, b.slice(b.length - 32), b.slice(0, b.length - 32));
+  }
+  function torDoor(why) {
+    const de = { none: 'Diese Seite ist nur mit einem persönlichen Link zugänglich.', bad: 'Dieser Link ist nicht (mehr) gültig.', gone: 'Ihr Zugang wurde beendet oder durch einen neuen Link ersetzt.', net: 'Keine Internetverbindung – zum ersten Öffnen braucht es Internet.' }[why];
+    const fr = { none: 'Cette page n’est accessible qu’avec un lien personnel.', bad: 'Ce lien n’est pas (ou plus) valable.', gone: 'Votre accès a été retiré ou remplacé par un nouveau lien.', net: 'Pas de connexion Internet – la première ouverture en a besoin.' }[why];
+    document.title = 'Bibliothek Wil';
+    document.getElementById('app').innerHTML = `<div style="min-height:100vh;display:grid;place-items:center;padding:24px;box-sizing:border-box;background:#f5f1ee;font:16px/1.5 system-ui,'Segoe UI',sans-serif;color:#2a1f1b">
+      <div style="max-width:440px;text-align:center"><div style="font:600 22px Georgia,serif;color:#6b3d2e;margin-bottom:4px">Bibliothek · Bibliothèque</div><div style="font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:#8a7a72;margin-bottom:18px">Priorat Wil</div>
+      <p style="margin:0 0 8px">${de}</p><p style="margin:0;color:#4a3d38">${fr}</p>${why === 'none' ? '' : '<p style="margin:14px 0 0;color:#6a5a52">Bitte beim Prior einen neuen Link verlangen.<br>Merci de demander un nouveau lien au prieur.</p>'}</div></div>`;
+    return false;
+  }
+  async function torVault() { try { if (!indexedDB.databases) return false; const Lx = await indexedDB.databases(); return Lx.some(d => d && d.name === 'natel-biblio') } catch (e) { return false } }
+  async function torOpen() {
+    let flag = null; try { flag = localStorage.getItem(TOR) } catch (e) { }
+    const m = location.hash.match(/lien=([A-Za-z0-9-]{24,40})/);
+    if (m) { const k = m[1].toUpperCase().replace(/[^A-Z0-9]/g, ''), z = await torHex(k); let r; try { r = await fetch('z-' + z + '.bin?t=' + Date.now(), { cache: 'no-store' }) } catch (e) { return torDoor('net') }
+      if (r.ok && await torCheck(new Uint8Array(await r.arrayBuffer()), k)) { try { localStorage.setItem(TOR, z) } catch (e) { } return true }
+      try { history.replaceState(null, '', location.pathname) } catch (e) { } return torDoor('bad') }
+    if (flag) { try { const r = await fetch('z-' + flag + '.bin?t=' + Date.now(), { cache: 'no-store', method: 'HEAD' }); if (r.status === 404) { try { localStorage.removeItem(TOR) } catch (e) { } return torDoor('gone') } } catch (e) { } return true }
+    if (await torVault()) return true;
+    return torDoor('none');
+  }
+
+  if (!document.getElementById('bib-css')) { const s = document.createElement('style'); s.id = 'bib-css'; s.textContent = `:root{--accent:#6b3d2e}.field{width:100%;box-sizing:border-box;font:inherit;font-size:16px;padding:11px 12px;border:1px solid var(--line);border-radius:12px;background:var(--surface);color:var(--ink)}
+    .sig{font-family:ui-monospace,Consolas,monospace;color:var(--accent)!important}.bref{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}.bt{display:flex;flex-direction:column;align-items:center;gap:2px;padding:10px 4px;border:1px solid var(--line);border-radius:14px;background:var(--surface);color:var(--ink);font:inherit;cursor:pointer}.bt svg{width:20px;height:20px;color:var(--accent)}.bt b{font-size:18px}.bt small{font-size:11.5px;color:var(--muted);text-align:center}
+    .acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.note.ok{background:#e7f3e9;color:#1d5a2c;border-radius:10px;padding:8px 10px}`; document.head.appendChild(s) }
+
+  torOpen().then(ok => { if (!ok) return;
+    M.init({
+      bundle: 'Bibliothek-Natel.json', autoSync: 'wil-bibliothekar.bin', autoSyncAlt: [], askWho: true, zugang: true, manualTxt: 'update_txt_bib',
+      notesRepo: (function () { const m = location.hostname.match(/^([^.]+)\.github\.io$/i); return m ? m[1] + '/' + location.hostname.toLowerCase() : '' })(),
+      id: 'biblio', name: 'Bibliothek Wil', langs: ['de', 'fr'], T, logo: window.LOGO,
+      sources: [{ key: 'biblio', label: 'src_bib', where: 'src_bib_where' }],
+      detect(o) { return (o && o.app === 'bibliothek-natel' && Array.isArray(o.b)) ? { key: 'biblio', label: 'src_bib', data: o } : null },
+      freshness() { const sa = M.st && (M.st.syncMade || M.st.syncAt); if (!sa) return esc(t('app_sub')); const d = new Date(sa), h = d.toTimeString().slice(0, 5); return esc(isoD(d) === today() ? t('fresh_today', { h }) : t('fresh_at', { d: chD(isoD(d)), h })) },
+      tabs: [{ v: 'home', icon: 'home', label: 'b_home' }, { v: 'ausl', icon: 'book', label: 'b_lend' }, { v: 'rueck', icon: 'check', label: 'b_back' }, { v: 'notes', icon: 'note', label: 'b_log' }, { v: 'donnees', icon: 'data', label: 'data' }],
+      tabOf: { buch: 'home' }, noteDomains: { biblio: 'src_bib' },
+      views: { home: vHome, buch: vBuch, ausl: vAusl, rueck: vRueck },
+      actions: {
+        more() { M.ui.lim = (+(M.ui.lim || 40)) + 40; M.render() },
+        lpick(el) { CUR.l = el.dataset.id; M.ui.rq = ''; M.render() }, lclr() { CUR.l = null; M.render() },
+        bpick(el) { if (!CUR.bs.includes(el.dataset.id)) CUR.bs.push(el.dataset.id); M.ui.bq = ''; M.render(); setTimeout(() => document.getElementById('bq2')?.focus(), 50) },
+        bdel(el) { CUR.bs = CUR.bs.filter(x => x !== el.dataset.id); M.render() },
+        async lnew() { const vn = document.getElementById('nvn').value.trim(), nn = document.getElementById('nnn').value.trim(); if (!vn && !nn) return;
+          const x = { t: 'leser', lid: 'n-' + uid(), vn, nn, ort: document.getElementById('nort').value.trim(), kat: document.getElementById('nkat').value };
+          await book_note(x, `${L('Nouveau lecteur', 'Neuer Leser')} : ${[nn, vn].filter(Boolean).join(', ')} (${x.ort})`); CUR.l = x.lid; M.toast(t('reader_saved')); M.render() },
+        lendthis(el) { CUR.bs = [el.dataset.b]; M.go('ausl') },
+        async lendgo() { if (!CUR.l || !CUR.bs.length) { M.toast(t('choose_first')); return } const r = reader(CUR.l), von = today();
+          for (const id of CUR.bs) { const b = book(id); if (!b || loanOf(b)) continue; await book_note({ t: 'aus', b: b.id, l: CUR.l, von }, `${L('Prêt', 'Ausleihe')} : ${b.ti} (${sig(b)}) → ${r?.n || '?'}`) }
+          CUR = { l: null, bs: [] }; M.toast(t('lend_ok')); M.go('rueck') },
+        async back1(el) { const b = book(el.dataset.b); if (!b) return; const lo = loanOf(b), r = lo && reader(lo.l), rg = regal(b);
+          await book_note({ t: 'zur', b: b.id }, `${L('Retour', 'Rückgabe')} : ${b.ti} (${sig(b)})${r ? ' ← ' + r.n : ''}`);
+          M.ui.msg = `✓ ${esc(b.ti)} – ${t('put_back')} <b>${rg ? esc(rg.name) + ' · ' : ''}${esc(sig(b))}</b>`; M.toast(t('back_ok')); if (M.view.n === 'rueck') M.render(); else M.go('rueck') },
+        async ext1(el) { const b = book(el.dataset.b); if (!b) return; await book_note({ t: 'ver', b: b.id }, `${L('Prolongation', 'Verlängerung')} : ${b.ti} (${sig(b)})`); M.toast(t('ext_ok')); M.render() }
+      }
+    });
+  });
+})();
+
+</script>
+</body></html>
