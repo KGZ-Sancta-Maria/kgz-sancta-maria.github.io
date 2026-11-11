@@ -52,6 +52,7 @@ input:focus,select:focus{outline:2px solid var(--accent);outline-offset:0}
 .q:last-child{border-bottom:0}
 .sub{background:var(--tint);border-radius:10px;padding:10px 12px;margin-top:8px}
 .sub b{display:block;font-size:12.5px;color:var(--accent);margin-bottom:4px}
+.bek{flex-direction:row;align-items:center;gap:10px;margin-top:10px;border:2px solid var(--accent);border-radius:10px;padding:9px 12px;background:var(--paper);color:var(--ink);font-size:14px;cursor:pointer}.bek input{width:20px;height:20px;margin:0;accent-color:var(--accent);flex:none;cursor:pointer}.bek b{font-weight:600}.bek small{display:block;color:var(--muted);font-size:12px;margin-top:1px}.bek.on{background:var(--tint)}
 .hint{font-size:12px;color:var(--muted)}
 .actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 .msg{font-size:13px;color:var(--muted);min-height:1em}.msg.ok{color:var(--ok)}.msg.bad{color:var(--warn)}
@@ -149,7 +150,7 @@ const TX={
  taufe:["Die Taufe","Le baptême"], tdat:["Voraussichtliches Datum","Date prévue"], tzeit:["Uhrzeit","Heure"],
  pate:["Pate","Parrain"], patin:["Patin","Marraine"], pname:["Name, Vorname","Nom, prénom"], wohn:["Wohnhaft in","Domicilié(e) à"],
  p16:["Mindestens 16 Jahre alt?","A au moins 16 ans ?"], alter:["sonst Alter","sinon âge"],
- bekannt:["Stammt aus dem Priorat / dem Priester bekannt","Vient du prieuré / connu du prêtre"],
+ bekannt:["Dem Priester bekannt / gehört zum Priorat","Connu du prêtre / fait partie du prieuré"], bekH:["Ankreuzen, wenn die Person bekannt ist – dann entfallen die Fragen unten.","À cocher si la personne est connue – les questions ci-dessous disparaissent alors."], bekOn:["Bekannt – die Fragen entfallen.","Connu(e) – les questions ne sont pas nécessaires."],
  fragen:["Falls nicht aus dem Priorat und dem Priester nicht bekannt:","S’il ne vient pas du prieuré et n’est pas connu du prêtre :"],
  stv:["Stellvertretung (Name)","Représentant (nom)"],
  ja:["ja","oui"], nein:["nein","non"], leer:["–","–"],
@@ -191,8 +192,9 @@ function personHTML(p){ // p = "pate" | "patin"
     ${inp(p+"_name","pname",{wide:true})}${inp(p+"_wohn","wohn")}${inp(p+"_rel","rel",{val:"Römisch-katholisch",list:"rels"})}
     <label>${L("p16")}<select id="${p}_16"><option value=" ">${L("leer")}</option><option value="ja">${L("ja")}</option><option value="nein">${L("nein")}</option></select></label>
     <label>${L("alter")}<select id="${p}_alter"><option value=""></option>${[12,13,14,15].map(a=>`<option>${a}</option>`).join("")}</select></label>
-    <label class="chk wide"><input type="checkbox" id="${p}_bek" checked><span>${L("bekannt")}</span></label></div>
-    <div class="sub" id="${p}_qs" hidden><b>${L("fragen")}</b>${QS.map(([k])=>yn(p+"_q_"+k,"q_"+k)).join("")}</div>
+</div>
+    <label class="bek" id="${p}_bekL"><input type="checkbox" id="${p}_bek"><span><b>${L("bekannt")}</b><small id="${p}_bekH">${L("bekH")}</small></span></label>
+    <div class="sub" id="${p}_qs"><b>${L("fragen")}</b>${QS.map(([k])=>yn(p+"_q_"+k,"q_"+k)).join("")}</div>
     <div class="g" style="margin-top:8px">${inp(p+"_stv","stv",{wide:true})}</div></fieldset>`;
 }
 function formHTML(){
@@ -219,7 +221,17 @@ const keep=()=>{ document.querySelectorAll("#f input,#f select").forEach(e=>{ VA
 const restore=()=>{ for(const id in VALS){ const e=$(id); if(!e) continue; if(e.type==="checkbox") e.checked=VALS[id]; else e.value=VALS[id]; } toggleQs(); };
 const v=id=>{ const e=$(id); return e?String(e.value||"").trim():""; };
 const dmy=s=>{ const m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(s||""); return m?`${m[3]}.${m[2]}.${m[1]}`:s; };
-function toggleQs(){ ["pate","patin"].forEach(p=>{ const c=$(p+"_bek"); if(c) $(p+"_qs").hidden=c.checked; }); }
+function toggleQs(){ ["pate","patin"].forEach(p=>{ const c=$(p+"_bek"); if(!c) return; $(p+"_qs").hidden=c.checked;
+  const l=$(p+"_bekL"); if(l) l.classList.toggle("on",c.checked); const h=$(p+"_bekH"); if(h) h.textContent=L(c.checked?"bekOn":"bekH");
+  /* nicht verheiratet → «kirchlich verheiratet?» entfällt */
+  const ve=$(p+"_q_verh"), ke=$(p+"_q_kirchl"); if(ve&&ke){ const no=ve.value==="nein"; ke.closest(".q").style.display=no?"none":""; if(no) ke.value=" "; } }); }
+/* Sohn / Tochter nach dem Vornamen (nur solange nicht von Hand gewählt) */
+const VM=new Set("johannes,josef,joseph,jakob,jacob,johann,jean,pierre,paul,peter,pius,michael,michel,thomas,matthias,mathias,andreas,stefan,stephan,stephane,franz,francois,franziskus,benedikt,benoit,dominik,leo,leon,lukas,luca,luc,elia,elias,nicola,nikolaus,nicolas,niklaus,joshua,noah,jonas,jona,david,daniel,samuel,raphael,gabriel,emanuel,emmanuel,anton,antoine,antonio,bernhard,bernard,karl,charles,ludwig,louis,martin,markus,marc,marco,philipp,philippe,simon,sebastian,sebastien,tobias,valentin,vincent,xavier,felix,florian,gregor,gregoire,ignaz,ignace,konrad,lorenz,laurent,maximilian,moritz,maurice,clemens,clement,alexander,alexandre,augustin,benjamin,christoph,christophe,damian,fabian,georg,georges,hubert,julian,julien,leopold,nathan,oliver,olivier,pascal,patrick,quentin,remi,robert,roman,theo,thibaud,timon,urs,viktor,victor,wendelin,zacharias,aaron,adrian,bruno,cyrill,cyrille,elie,etienne,guillaume,henri,heinrich,hugo,jeremie,joel,josue,mathieu,matthieu,noe,remy,sylvain,yves".split(","));
+const VF=new Set("maria,marie,anna,anne,elisabeth,theresia,therese,teresa,katharina,catherine,magdalena,madeleine,johanna,jeanne,josefa,agnes,cecilia,cecile,clara,claire,lucia,lucie,monika,monique,veronika,veronique,barbara,regina,rosa,rose,sophia,sophie,ursula,ruth,esther,miriam,rebekka,sarah,judith,elena,helene,irene,margrit,margareta,marguerite,beatrix,birgit,carmen,christine,christina,franziska,francoise,gabriela,gabrielle,isabelle,josephine,juliette,laura,lea,leonie,louise,luise,martina,mathilde,natalie,nathalie,salome,simone,susanne,valerie,victoria,viktoria,bernadette,brigitte,edith,gertrud,hildegard,ines,ingrid,odile,philomena,scholastika,emilie,amelie,charlotte,chiara,eva,eve,ida,lena,lina,mia,nina,noemi,olivia,pauline,rahel,ronja,zoe".split(","));
+const VX=new Set("andrea,dominique,claude,camille,noa,sascha,kim,alex,maxime,michele,gabriele,daniele".split(","));
+function gGuess(n){ const f=String(n||"").trim().split(/[\s-]+/)[0].toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,""); if(!f||VX.has(f)) return "";
+  if(VM.has(f)) return "Sohn des"; if(VF.has(f)) return "Tochter des"; if(/(a|ia|ine|ette|elle|ie)$/.test(f)) return "Tochter des"; return ""; }
+let ST_HAND=false, KNAME_AUTO=false;
 
 /* Felder des Original-PDF (Namen genau wie im Distrikt-PDF) */
 function values(){
@@ -274,7 +286,11 @@ function render(){
   keep(); $("f").innerHTML=formHTML(); restore();
   if(!$("pv").querySelector("iframe")) $("pv").innerHTML=`<div class="empty" style="white-space:pre-line">${esc(L("pvEmpty"))}</div>`;
 }
-document.addEventListener("change",e=>{ if(/_bek$/.test(e.target.id)) toggleQs(); });
+document.addEventListener("change",e=>{ if(/_bek$|_q_verh$/.test(e.target.id)) toggleQs(); if(e.target.id==="k_st") ST_HAND=true; });
+document.addEventListener("input",e=>{ const id=e.target.id;
+  if(id==="k_vorn"&&!ST_HAND&&$("k_st")){ $("k_st").value=gGuess(e.target.value)||"Sohn/Tochter des"; }
+  if(id==="k_name") KNAME_AUTO=false;
+  if(id==="v_name"&&$("k_name")&&(!v("k_name")||KNAME_AUTO)){ const w=v("v_name").split(/\s+/); if(w.length>1){ $("k_name").value=w[w.length-1]; KNAME_AUTO=true; } } });
 document.querySelectorAll("[data-lang]").forEach(b=>b.onclick=()=>{ LANG=b.dataset.lang; try{localStorage.setItem("wil-start-lang",LANG);}catch(e){} render(); });
 $("bPrev").onclick=()=>preview();
 $("bDl").onclick=async()=>{ if(!need()) return; const bytes=await preview(); if(!bytes) return; const n=PUBLIC?fname().replace(/^\d{4}-\d{2}-\d{2} /,""):fname(); const a=document.createElement("a"); a.href=URLB; a.download=n; document.body.appendChild(a); a.click(); a.remove(); if(PUBLIC){ msg(L("pubDone",{f:n}),"ok"); LAST={bytes,n}; $("pubMail").hidden=false; $("pubMail").scrollIntoView({behavior:"smooth",block:"center"}); } };
@@ -377,7 +393,7 @@ const fn=x=>x?[x.firstName,x.lastName].filter(Boolean).join(" "):"";
 window.addEventListener("message",ev=>{ const m=ev.data; if(!m||m.app!=="wil-formpick"||!m.data||(LSAWIN&&ev.source!==LSAWIN)) return; const d=m.data, p=d.person||{};
   if(LSASLOT==="kind"){
     setV("k_name",p.lastName); setV("k_vorn",[p.firstName,p.otherFirstNames].filter(Boolean).join(" ")); setV("k_geb",p.birth); setV("k_gort",p.birthPlace); setV("k_heim",p.origin);
-    if(p.sex==="m") $("k_st").value="Sohn des"; else if(p.sex==="f") $("k_st").value="Tochter des";
+    if(p.sex==="m"){ $("k_st").value="Sohn des"; ST_HAND=true; } else if(p.sex==="f"){ $("k_st").value="Tochter des"; ST_HAND=true; }
     if(d.father) setV("v_name",fn(d.father)); if(d.mother){ setV("m_name",fn(d.mother)); setV("m_ledig",d.mother.birthName); }
     ELTERN_MAIL=[d.mother&&d.mother.email,d.father&&d.father.email].filter((x,i,a)=>x&&a.indexOf(x)===i);
     if(d.marriage){ setV("tr_dat",d.marriage.date); setV("tr_ort",d.marriage.place); }
@@ -385,6 +401,7 @@ window.addEventListener("message",ev=>{ const m=ev.data; if(!m||m.app!=="wil-for
   } else if(LSASLOT==="pate"||LSASLOT==="patin"){
     setV(LSASLOT+"_name",[p.lastName,p.firstName].filter(Boolean).join(" ")); if(d.household) setV(LSASLOT+"_wohn",d.household.city);
     if(p.birth){ const a=Math.floor((Date.now()-new Date(p.birth))/31557600000); $(LSASLOT+"_16").value=a>=16?"ja":"nein"; if(a<16&&a>=12) $(LSASLOT+"_alter").value=String(a); }
+    if($(LSASLOT+"_bek")){ $(LSASLOT+"_bek").checked=true; toggleQs(); } /* aus dem Liber Status Animarum = gehört zum Priorat */
   }
   try{ elUpd(); }catch(x){} keep(); msg(L("lsaOk",{n:[p.lastName,p.firstName].filter(Boolean).join(" ")}),"ok"); try{ LSAWIN&&LSAWIN.focus&&window.focus(); }catch(x){} });
 if(/[?&]embed=1/.test(location.search)){ document.body.classList.add("embed"); $("bBack").href="Formulare_Wil.html?embed=1"; }
