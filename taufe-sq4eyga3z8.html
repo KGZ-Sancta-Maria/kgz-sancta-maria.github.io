@@ -64,6 +64,12 @@ input:focus,select:focus{outline:2px solid var(--accent);outline-offset:0}
 .ret .adr{margin-top:6px;font-size:13px}.ret code{font-size:14px}
 body.embed{padding-top:6px}body.embed header .org b{display:none}body.embed h1{font-size:22px}
 .priv{border-left:4px solid var(--accent);background:var(--tint);padding:8px 12px;border-radius:8px;font-size:12.5px}
+.sigm{display:flex;flex-direction:row;gap:10px;align-items:flex-start;border:2px solid var(--line);border-radius:10px;padding:10px 12px;margin:0 0 8px;background:var(--paper);color:var(--ink);cursor:pointer}
+.sigm:has(input:checked){border-color:var(--accent);background:var(--tint)}.sigm input{width:20px;height:20px;margin:2px 0 0;accent-color:var(--accent);flex:none}
+.sigm b{display:block;font-size:14.5px;font-weight:600}.sigm small{display:block;font-size:12.5px;color:var(--muted);margin-top:2px;line-height:1.4}
+.pads{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px;margin-top:6px}.pad{display:flex;flex-direction:column;gap:4px;font-size:13px}
+.padh{display:flex;justify-content:space-between;align-items:center}.padh .btn{padding:2px 9px;font-size:12px}
+.pad canvas{width:100%;aspect-ratio:15/4;background:#fff;border:1px solid var(--field-bd);border-bottom:2px solid var(--ink);border-radius:8px;touch-action:none;cursor:crosshair}
 </style>
 </head>
 <body>
@@ -87,13 +93,13 @@ body.embed{padding-top:6px}body.embed header .org b{display:none}body.embed h1{f
     <p class="msg" id="msg"></p>
     <div class="ret" id="pubMail" hidden>
       <b id="retT"></b>
-      <div class="opt"><i>A</i><div><span id="retA"></span>
+      <div class="opt" id="optA"><i>A</i><div><span id="retA"></span>
         <div class="actions" style="margin-top:6px"><button type="button" class="btn pri" id="bShare"></button></div>
         <p class="hint" id="mailWhich" style="margin:8px 0 4px"></p>
         <div class="actions"><a class="btn" id="bGmail" href="#" target="_blank" rel="noopener">Gmail</a><a class="btn" id="bOutl" href="#" target="_blank" rel="noopener">Outlook.com / Hotmail</a><a class="btn" id="bMail" href="#"></a></div>
         <div class="adr"><span id="retAdr"></span> <code>wil@fsspx.ch</code> <button type="button" class="btn" id="bAdr" style="padding:3px 9px"></button></div>
         <p class="hint" id="mailHint" style="margin:4px 0 0"></p></div></div>
-      <div class="opt"><i>B</i><div><span id="retB"></span></div></div>
+      <div class="opt" id="optB"><i>B</i><div><span id="retB"></span></div></div>
       <p class="hint" id="retFam" style="margin:6px 0 0;font-weight:600"></p>
     </div>
     <div class="sub" id="eltern" hidden style="margin-bottom:12px">
@@ -163,9 +169,9 @@ const TX={
  err:["Fehler beim Ausfüllen: {e}","Erreur lors du remplissage : {e}"], lsa:["Aus dem Liber Status Animarum","Depuis le Liber Status Animarum"], lsaKind:["Kind wählen (füllt Eltern, Adresse, Trauung)","Choisir l’enfant (remplit parents, adresse, mariage)"], lsaP:["Person wählen","Choisir la personne"],
  lsaOk:["Übernommen aus dem Liber Status Animarum: {n}","Repris du Liber Status Animarum : {n}"], lsaWait:["Liber Status Animarum geöffnet – dort entsperren, die Person öffnen und «Ins Formular übernehmen» klicken.","Liber Status Animarum ouvert – le déverrouiller, ouvrir la personne et cliquer « Reprendre dans le formulaire »."], lsaBlock:["Das Fenster wurde blockiert – bitte Pop-ups für diese Seite erlauben.","La fenêtre a été bloquée – autorisez les fenêtres pour cette page."],
  pubSub:["Kirchgemeinde Sancta Maria Wil – bitte ausfüllen; am Schluss entsteht das offizielle Formular als PDF","Kirchgemeinde Sancta Maria Wil – à remplir ; à la fin, le formulaire officiel est créé en PDF"],
- pubPriv:["Ihre Angaben werden nirgends hin gesendet: das PDF entsteht nur auf Ihrem Gerät. Danach zwei Möglichkeiten – A) elektronisch: das PDF per E-Mail an wil@fsspx.ch senden (die Unterschriften folgen bei der Taufvorbereitung); B) auf Papier: ausdrucken, von Vater und Mutter unterschreiben lassen und mitbringen. In beiden Fällen das Familienbüchlein mitbringen.","Vos données ne sont envoyées nulle part : le PDF est créé seulement sur votre appareil. Ensuite deux possibilités – A) électronique : envoyer le PDF par e-mail à wil@fsspx.ch (les signatures suivront lors de la préparation au baptême) ; B) papier : l’imprimer, le faire signer par le père et la mère et l’apporter. Dans les deux cas, apporter le livret de famille."],
- pubDl:["Fertig – PDF erstellen","Terminé – créer le PDF"], pubDone:["Das PDF wurde heruntergeladen: «{f}». Jetzt entweder per E-Mail zurücksenden (Knopf unten) oder ausdrucken und von beiden Eltern unterschreiben lassen.","Le PDF a été téléchargé : « {f} ». Maintenant, soit le renvoyer par e-mail (bouton ci-dessous), soit l’imprimer et le faire signer par les deux parents."],
- elT:["An die Eltern senden","Envoyer aux parents"], elH:["Die Eltern bekommen einen Link (gültig bis zum gewählten Datum). Sie füllen auf ihrem Gerät aus, laden das PDF herunter, unterschreiben und bringen es mit oder senden es zurück. Ihre Angaben gehen nirgends hin.","Les parents reçoivent un lien (valable jusqu’à la date choisie). Ils remplissent sur leur appareil, téléchargent le PDF, signent et l’apportent ou le renvoient. Leurs données ne vont nulle part."],
+ pubPriv:["Ihre Angaben werden nirgends hin gesendet: das PDF entsteht nur auf Ihrem Gerät. Zum Unterschreiben gibt es drei Möglichkeiten (unten im Formular): 1) alles elektronisch – hier unterschreiben und per E-Mail zurücksenden; 2) elektronisch ausfüllen und im Priorat unterschreiben; 3) ausdrucken, von Hand unterschreiben, mitbringen oder eingescannt zurücksenden. In jedem Fall das Familienbüchlein mitbringen.","Vos données ne sont envoyées nulle part : le PDF est créé seulement sur votre appareil. Pour la signature, trois possibilités (en bas du formulaire) : 1) tout électronique – signer ici et renvoyer par e-mail ; 2) remplir en ligne et signer au prieuré ; 3) imprimer, signer à la main, l’apporter ou le renvoyer scanné. Dans tous les cas, apporter le livret de famille."],
+ pubDl:["Fertig – PDF erstellen","Terminé – créer le PDF"], pubDone:["Das PDF wurde heruntergeladen: «{f}». Wie es weitergeht, steht gleich unten.","Le PDF a été téléchargé : « {f} ». La suite est indiquée juste en dessous."],
+ elT:["An die Eltern senden","Envoyer aux parents"], elH:["Die Eltern bekommen einen Link (gültig bis zum gewählten Datum). Sie füllen auf ihrem Gerät aus und wählen: hier elektronisch unterschreiben und zurücksenden, im Priorat unterschreiben, oder ausdrucken, von Hand unterschreiben und mitbringen bzw. eingescannt zurücksenden. Ihre Angaben gehen nirgends hin.","Les parents reçoivent un lien (valable jusqu’à la date choisie). Ils remplissent sur leur appareil et choisissent : signer ici électroniquement et renvoyer, signer au prieuré, ou imprimer, signer à la main et l’apporter ou le renvoyer scanné. Leurs données ne vont nulle part."],
  elBis:["Link gültig bis","Lien valable jusqu’au"], elSpr:["Sprache der E-Mail","Langue de l’e-mail"], elVon:["Absender","Expéditeur"], elCopy:["Link kopieren","Copier le lien"], elMail:["Anderes E-Mail-Programm","Autre messagerie"], elEml:["In Outlook öffnen","Ouvrir dans Outlook"], elText:["E-Mail-Text kopieren","Copier le texte de l’e-mail"], textCopied:["E-Mail kopiert (mit Knopf) – in eine neue E-Mail einfügen; Betreff selbst eintragen.","E-mail copié (avec bouton) – à coller dans un nouvel e-mail ; ajouter l’objet."],
  emlDone:["Datei «{f}» heruntergeladen – öffnen (unten im Browser oder im Ordner Downloads): Outlook zeigt die E-Mail zum Senden.","Fichier « {f} » téléchargé – l’ouvrir (en bas du navigateur ou dans Téléchargements) : Outlook affiche l’e-mail prêt à envoyer."],
  elHow:["«In Outlook öffnen» erstellt eine E-Mail-Datei, die Outlook (klassisch) als neue Nachricht öffnet. Sonst den Text oder nur den Link kopieren.","« Ouvrir dans Outlook » crée un fichier e-mail qu’Outlook (classique) ouvre comme nouveau message. Sinon copier le texte ou seulement le lien."], copied:["Link kopiert.","Lien copié."],
@@ -174,10 +180,25 @@ const TX={
  retT:["So geben Sie das Formular zurück","Comment rendre le formulaire"],
  retA:["Elektronisch: das PDF an die Kirchgemeinde senden. Die Unterschriften folgen bei der Taufvorbereitung.","Par voie électronique : envoyer le PDF à la paroisse. Les signatures suivront lors de la préparation au baptême."],
  retB:["Auf Papier: das heruntergeladene PDF ausdrucken, von Vater und Mutter unterschreiben lassen und mitbringen oder per Post senden.","Sur papier : imprimer le PDF téléchargé, le faire signer par le père et la mère, l’apporter ou l’envoyer par la poste."],
- retFam:["In beiden Fällen: das Familienbüchlein spätestens am Vorabend der Taufe mitbringen.","Dans les deux cas : apporter le livret de famille au plus tard la veille de la cérémonie."],
+ retFam:["In jedem Fall: das Familienbüchlein spätestens am Vorabend der Taufe mitbringen.","Dans tous les cas : apporter le livret de famille au plus tard la veille de la cérémonie."],
  retAdr:["Adresse:","Adresse :"], copyAdr:["kopieren","copier"], adrCopied:["Adresse kopiert.","Adresse copiée."],
- shareNo:["Auf diesem Gerät bitte «E-Mail-Programm öffnen» verwenden und das heruntergeladene PDF anhängen.","Sur cet appareil, utilisez « Ouvrir la messagerie » et joignez le PDF téléchargé."], mailHint:["Die Adresse ist schon eingetragen. Das heruntergeladene PDF finden Sie im Ordner «Downloads».","L’adresse est déjà indiquée. Le PDF téléchargé se trouve dans le dossier « Téléchargements »."],
- need:["Bitte mindestens Name und Vorname des Kindes eintragen.","Veuillez indiquer au moins le nom et le prénom de l’enfant."]
+ shareNo:["Auf diesem Gerät bitte «E-Mail-Programm öffnen» verwenden und das heruntergeladene PDF anhängen.","Sur cet appareil, utilisez « Ouvrir la messagerie » et joignez le PDF téléchargé."], mailHint:["«PDF senden» öffnet Mail, WhatsApp usw. mit dem PDF als Anhang – Empfänger: wil@fsspx.ch. Bei den anderen Knöpfen das PDF von Hand anhängen (Ordner «Downloads»).","« Envoyer le PDF » ouvre Mail, WhatsApp, etc. avec le PDF joint – destinataire : wil@fsspx.ch. Avec les autres boutons, joindre le PDF à la main (dossier « Téléchargements »)."],
+ need:["Bitte mindestens Name und Vorname des Kindes eintragen.","Veuillez indiquer au moins le nom et le prénom de l’enfant."],
+ sigT:["Unterschrift der Eltern","Signature des parents"], sigWie:["Wie möchten Sie unterschreiben? Bitte eine der drei Möglichkeiten wählen.","Comment souhaitez-vous signer ? Veuillez choisir l’une des trois possibilités."],
+ sEt:["Alles elektronisch","Tout par voie électronique"], sE:["Vater und Mutter unterschreiben hier auf dem Bildschirm; danach das unterschriebene PDF per E-Mail zurücksenden.","Le père et la mère signent ici à l’écran ; ensuite renvoyer le PDF signé par e-mail."],
+ sPt:["Elektronisch ausfüllen – im Priorat unterschreiben","Remplir en ligne – signer au prieuré"], sP:["Das PDF per E-Mail senden; das Priorat druckt es aus, und Vater und Mutter unterschreiben vor Ort (bei der Taufvorbereitung).","Envoyer le PDF par e-mail ; le prieuré l’imprime, et le père et la mère signent sur place (lors de la préparation au baptême)."],
+ sHt:["Auf Papier unterschreiben","Signer sur papier"], sH:["Das PDF selbst ausdrucken und von Hand unterschreiben; dann mitbringen – oder einscannen bzw. fotografieren und per E-Mail zurücksenden.","Imprimer soi-même le PDF et le signer à la main ; puis l’apporter – ou le scanner / photographier et le renvoyer par e-mail."],
+ sIntern:["Die Eltern unterschreiben hier auf dem Bildschirm (z. B. am Tablet)","Les parents signent ici à l’écran (p. ex. sur la tablette)"],
+ sigV:["Unterschrift des Vaters","Signature du père"], sigM:["Unterschrift der Mutter","Signature de la mère"], sigClr:["löschen","effacer"],
+ sigHint:["Mit dem Finger, dem Stift oder der Maus in das weisse Feld schreiben.","Écrire dans le cadre blanc avec le doigt, le stylet ou la souris."],
+ sigWahl:["Bitte unten bei «Unterschrift der Eltern» wählen, wie Sie unterschreiben.","Veuillez choisir plus bas, sous « Signature des parents », comment vous signez."],
+ sigNeed:["Bitte im Feld unterschreiben (Vater und/oder Mutter) – oder eine andere Möglichkeit wählen.","Veuillez signer dans le cadre (père et/ou mère) – ou choisir une autre possibilité."],
+ sigOn:["elektronisch unterschrieben am {d}","signé électroniquement le {d}"],
+ retTe:["So senden Sie das unterschriebene Formular zurück","Comment renvoyer le formulaire signé"], retAe:["Das unterschriebene PDF per E-Mail an die Kirchgemeinde senden.","Envoyer le PDF signé par e-mail à la paroisse."],
+ retAp:["Das PDF per E-Mail an die Kirchgemeinde senden. Das Priorat druckt es aus; Vater und Mutter unterschreiben vor Ort, bei der Taufvorbereitung.","Envoyer le PDF par e-mail à la paroisse. Le prieuré l’imprime ; le père et la mère signent sur place, lors de la préparation au baptême."],
+ retAh:["Das heruntergeladene PDF ausdrucken und von Vater und Mutter unterschreiben lassen. Dann einscannen oder gut lesbar fotografieren und per E-Mail an die Kirchgemeinde senden (Scan/Foto anhängen) …","Imprimer le PDF téléchargé et le faire signer par le père et la mère. Puis le scanner ou le photographier lisiblement et l’envoyer par e-mail à la paroisse (joindre le scan / la photo) …"],
+ retBh:["… oder das unterschriebene Blatt mitbringen bzw. per Post senden.","… ou apporter la feuille signée, ou l’envoyer par la poste."],
+ mailHintH:["Den Scan oder das Foto von Hand an die E-Mail anhängen.","Joindre à la main le scan ou la photo à l’e-mail."]
 };
 let LANG=(()=>{try{return localStorage.getItem("wil-start-lang")==="fr"?"fr":"de";}catch(e){return "de";}})();
 const L=(k,o)=>{let s=(TX[k]||[k,k])[LANG==="fr"?1:0]; if(o) for(const x in o) s=s.replace("{"+x+"}",o[x]); return s;};
@@ -215,8 +236,40 @@ function formHTML(){
   <fieldset><legend>${L("taufe")}</legend><div class="g">
     ${inp("t_dat","tdat",{type:"date"})}<label>${L("tzeit")}<input id="t_zeit" list="zeiten" placeholder="11:00"></label>
     <datalist id="zeiten">${ZEITEN.map(z=>`<option>${z}</option>`).join("")}</datalist></div></fieldset>
-  ${personHTML("pate")}${personHTML("patin")}`;
+  ${personHTML("pate")}${personHTML("patin")}
+  <fieldset><legend>${L("sigT")}</legend>
+  ${PUBLIC?`<p class="hint" style="margin:0 0 8px">${L("sigWie")}</p>`+["e","p","h"].map((m,i)=>`<label class="sigm"><input type="radio" name="sigm" id="sigm_${m}" value="${m}"${SIGMODE===m?" checked":""}><span><b>${i+1}. ${L("s"+m.toUpperCase()+"t")}</b><small>${L("s"+m.toUpperCase())}</small></span></label>`).join("")
+    :`<label class="bek"><input type="checkbox" id="sig_on"${SIGMODE==="e"?" checked":""}><span><b>${L("sIntern")}</b></span></label>`}
+  <div id="sigPads"${SIGMODE==="e"?"":" hidden"}><div class="pads">${["v","m"].map(k=>`<div class="pad"><div class="padh"><span>${L(k==="v"?"sigV":"sigM")}</span><button type="button" class="btn" data-clr="${k}">${L("sigClr")}</button></div><canvas id="sig_${k}" width="900" height="240"></canvas></div>`).join("")}</div>
+  <p class="hint" style="margin:6px 0 0">${L("sigHint")}</p></div></fieldset>`;
 }
+
+/* Unterschrift der Eltern: e = hier am Bildschirm, p = im Priorat, h = von Hand auf Papier (nur im Speicher, nirgends gesendet) */
+let SIGMODE="", SIG={v:null,m:null};
+function padInit(k){ const c=$("sig_"+k); if(!c) return; const x=c.getContext("2d"); x.lineWidth=4; x.lineCap="round"; x.lineJoin="round"; x.strokeStyle=x.fillStyle="#0b2a6b";
+  if(SIG[k]){ const im=new Image(); im.onload=()=>x.drawImage(im,0,0); im.src=SIG[k]; }
+  let dn=false,lx=0,ly=0; const pos=e=>{ const r=c.getBoundingClientRect(); return [(e.clientX-r.left)*c.width/r.width,(e.clientY-r.top)*c.height/r.height]; };
+  c.onpointerdown=e=>{ e.preventDefault(); dn=true; try{c.setPointerCapture(e.pointerId);}catch(_){} [lx,ly]=pos(e); x.beginPath(); x.arc(lx,ly,2,0,7); x.fill(); };
+  c.onpointermove=e=>{ if(!dn) return; const [nx,ny]=pos(e); x.beginPath(); x.moveTo(lx,ly); x.lineTo(nx,ny); x.stroke(); lx=nx; ly=ny; };
+  c.onpointerup=c.onpointercancel=()=>{ if(!dn) return; dn=false; SIG[k]=c.toDataURL("image/png"); }; }
+function sigVis(){ const d=$("sigPads"); if(d) d.hidden=SIGMODE!=="e"; }
+function retUpd(){ if(!PUBLIC) return; const h=SIGMODE==="h";
+  $("retT").textContent=L(SIGMODE==="e"?"retTe":"retT"); $("retA").textContent=L(SIGMODE==="e"?"retAe":h?"retAh":"retAp");
+  $("optB").hidden=!h; $("retB").textContent=L("retBh"); $("bShare").hidden=!MOBILE||h; $("mailHint").textContent=L(h?"mailHintH":"mailHint"); }
+function sigInit(){ padInit("v"); padInit("m"); sigVis(); retUpd(); }
+function sigTrim(u){ return new Promise(res=>{ const im=new Image(); im.onload=()=>{ const c=document.createElement("canvas"); c.width=im.width; c.height=im.height; const x=c.getContext("2d"); x.drawImage(im,0,0);
+  const d=x.getImageData(0,0,c.width,c.height).data; let x0=c.width,y0=c.height,x1=-1,y1=-1;
+  for(let y=0;y<c.height;y++) for(let i=0;i<c.width;i++) if(d[(y*c.width+i)*4+3]>20){ if(i<x0)x0=i; if(i>x1)x1=i; if(y<y0)y0=y; if(y>y1)y1=y; }
+  if(x1<0){ res(null); return; } const p=6; x0=Math.max(0,x0-p); y0=Math.max(0,y0-p); x1=Math.min(c.width-1,x1+p); y1=Math.min(c.height-1,y1+p);
+  const o=document.createElement("canvas"); o.width=x1-x0+1; o.height=y1-y0+1; o.getContext("2d").drawImage(c,x0,y0,o.width,o.height,0,0,o.width,o.height); res({u:o.toDataURL("image/png"),w:o.width,h:o.height}); }; im.src=u; }); }
+/* Lage der Unterschriftslinien im Original (Seite 2): x von–bis, y der Linie (PDF-Koordinaten) */
+const SIGPOS={de:{v:[246,520,306],m:[248,520,273]},fr:{v:[306,520,295],m:[318,520,256]}};
+async function sigStamp(doc,font){ if(SIGMODE!=="e") return; const pg=doc.getPages()[1]; const d=new Date(), ds=String(d.getDate()).padStart(2,"0")+"."+String(d.getMonth()+1).padStart(2,"0")+"."+d.getFullYear();
+  for(const k of ["v","m"]){ if(!SIG[k]) continue; const t=await sigTrim(SIG[k]); if(!t) continue; const [xa,xb,yl]=SIGPOS[FLANG][k];
+    let h=30, w=t.w*h/t.h; if(w>xb-xa-10){ w=xb-xa-10; h=t.h*w/t.w; } const img=await doc.embedPng(t.u);
+    pg.drawImage(img,{x:xa+8,y:yl-3,width:w,height:h});
+    const txt=(FLANG==="fr"?"signé électroniquement le ":"elektronisch unterschrieben am ")+ds, fs=6.5;
+    pg.drawText(txt,{x:xb-font.widthOfTextAtSize(txt,fs),y:yl-9,size:fs,font,color:PDFLib.rgb(.42,.38,.37)}); } }
 
 /* Werte zwischen Sprachwechseln behalten (nur im Speicher) */
 let VALS={};
@@ -284,6 +337,7 @@ async function build(){
   for(const n in T){ const f=form.getTextField(n); f.setText(T[n]||""); try{ f.setFontSize(/^Adresse/.test(n)?10:10.5); }catch(e){} }
   for(const n in D){ const f=form.getDropdown(n); f.select(D[n]); try{ f.setFontSize(10.5); }catch(e){} }
   form.updateFieldAppearances(font);
+  await sigStamp(doc,font);
   if($("lock").checked) form.flatten();
   doc.setModificationDate(new Date());
   return doc.save();
@@ -295,7 +349,7 @@ let URLB=null, LAST=null;
 const MOBILE=/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)||(navigator.maxTouchPoints>1&&/Macintosh/.test(navigator.userAgent));
 async function preview(){ try{ const bytes=await build(); if(URLB) URL.revokeObjectURL(URLB); URLB=URL.createObjectURL(new Blob([bytes],{type:"application/pdf"}));
   $("pv").innerHTML=`<iframe title="PDF" src="${URLB}#view=FitH"></iframe>`; msg(L("done"),"ok"); return bytes; }catch(e){ msg(L("err",{e:e.message||e}),"bad"); return null; } }
-const need=()=>{ if(!v("k_name")||!v("k_vorn")){ msg(L("need"),"bad"); return false; } return true; };
+const need=()=>{ if(!v("k_name")||!v("k_vorn")){ msg(L("need"),"bad"); return false; } if(PUBLIC&&!SIGMODE){ msg(L("sigWahl"),"bad"); $("sigm_e").scrollIntoView({behavior:"smooth",block:"center"}); return false; } if(SIGMODE==="e"&&!SIG.v&&!SIG.m){ msg(L("sigNeed"),"bad"); $("sigPads").scrollIntoView({behavior:"smooth",block:"center"}); return false; } return true; };
 
 /* Ordner „00. App“ wie in den anderen Werkzeugen */
 function idb(){ return new Promise((res,rej)=>{ const r=indexedDB.open("wil-archiv",1);
@@ -311,10 +365,11 @@ function render(){
   if(!PUBLIC){ $("elT").textContent=L("elT"); $("elH").textContent=L("elH"); $("elBisL").textContent=L("elBis"); $("elSprL").textContent=L("elSpr"); $("elVonL").textContent=L("elVon"); $("bElCopy").textContent=L("elCopy"); $("bElMail").textContent=L("elMail"); $("bElEml").textContent=L("elEml"); $("bElText").textContent=L("elText"); $("elHow").textContent=L("elHow"); }
   if(PUBLIC){ $("retT").textContent=L("retT"); $("retA").textContent=L("retA"); $("retB").textContent=L("retB"); $("retFam").textContent=L("retFam"); $("retAdr").textContent=L("retAdr"); $("bAdr").textContent=L("copyAdr"); $("bShare").textContent=L("share");
     $("bMail").textContent=L("mail"); $("mailWhich").textContent=L(MOBILE?"mailWhichM":"mailWhich"); $("bShare").hidden=!MOBILE; $("mailHint").textContent=L("mailHint"); $("tSub").textContent=L("pubSub"); $("priv").textContent=L("pubPriv"); $("bBack").hidden=true; $("bSave").hidden=true; $("lLock").parentElement.hidden=true; $("bDl").textContent=L("pubDl"); $("bDl").classList.add("pri"); $("bPrev").classList.remove("pri"); }
-  keep(); $("f").innerHTML=formHTML(); restore();
+  keep(); $("f").innerHTML=formHTML(); restore(); sigInit();
   if(!$("pv").querySelector("iframe")) $("pv").innerHTML=`<div class="empty" style="white-space:pre-line">${esc(L("pvEmpty"))}</div>`;
 }
-document.addEventListener("change",e=>{ if(e.target.id==="f_lang"){ setFLang(e.target.value,true); return; } if(/_bek$|_q_verh$/.test(e.target.id)) toggleQs(); if(e.target.id==="k_st") ST_HAND=true; });
+document.addEventListener("click",e=>{ const b=e.target.closest&&e.target.closest("[data-clr]"); if(!b) return; const k=b.dataset.clr, c=$("sig_"+k); SIG[k]=null; if(c) c.getContext("2d").clearRect(0,0,c.width,c.height); });
+document.addEventListener("change",e=>{ if(e.target.name==="sigm"){ SIGMODE=e.target.value; sigVis(); retUpd(); return; } if(e.target.id==="sig_on"){ SIGMODE=e.target.checked?"e":""; sigVis(); return; } if(e.target.id==="f_lang"){ setFLang(e.target.value,true); return; } if(/_bek$|_q_verh$/.test(e.target.id)) toggleQs(); if(e.target.id==="k_st") ST_HAND=true; });
 document.addEventListener("input",e=>{ const id=e.target.id;
   if(id==="k_vorn"&&!ST_HAND&&$("k_st")){ $("k_st").value=gGuess(e.target.value)||"Sohn/Tochter des"; }
   if(id==="k_name") KNAME_AUTO=false;
@@ -344,10 +399,11 @@ function elMailParts(){ const fr=$("elSpr").value==="fr", u=elUrl(), bis=dmy($("
     p1:`Nous tenons à vous féliciter de tout cœur pour la naissance ${kind?"de "+kind:"de votre enfant"}, et nous nous réjouissons qu’${v("k_st")==="Tochter des"?"elle":"il"} puisse bientôt recevoir le saint baptême${wann}. Par ce sacrement, ${kind||"votre enfant"} deviendra enfant de Dieu et membre de l’Église.`,
     p2:"Pour bien préparer la cérémonie et inscrire correctement le baptême dans le registre, nous vous prions de remplir la demande de baptême officielle. Cela ne prend que quelques minutes.",
     btn:"Remplir la demande de baptême", alt:"Si le bouton ne s’ouvre pas :", altL:"cliquez ici",
-    ch:"Ensuite, deux possibilités au choix",
-    o1t:"Tout par voie électronique", o1:["Remplissez le formulaire et cliquez sur « Terminé – créer le PDF ».","Renvoyez le PDF par e-mail à "+RETOUR+" (un bouton vous y aide).","Les deux parents signeront lors de la préparation au baptême."],
-    o2t:"Sur papier", o2:["Remplissez le formulaire et cliquez sur « Terminé – créer le PDF ».","Imprimez-le ; le père et la mère le signent tous deux.","Apportez-le, ou envoyez-le par la poste."],
-    fam:"Dans les deux cas, merci d’apporter le livret de famille au plus tard la veille du baptême.",
+    ch:"Ensuite, pour la signature, trois possibilités au choix",
+    o1t:"Tout par voie électronique", o1:["Remplissez le formulaire ; en bas, le père et la mère signent à l’écran (avec le doigt ou la souris).","Cliquez sur « Terminé – créer le PDF » et renvoyez le PDF signé par e-mail à "+RETOUR+" (un bouton vous y aide)."],
+    o2t:"Remplir en ligne – signer au prieuré", o2:["Remplissez le formulaire, créez le PDF et renvoyez-le par e-mail à "+RETOUR+".","Le prieuré l’imprime ; le père et la mère signent sur place, lors de la préparation au baptême."],
+    o3t:"Signer sur papier", o3:["Remplissez le formulaire et créez le PDF.","Imprimez-le ; le père et la mère le signent à la main.","Apportez-le, ou scannez-le / photographiez-le et renvoyez-le par e-mail à "+RETOUR+"."],
+    fam:"Dans tous les cas, merci d’apporter le livret de famille au plus tard la veille du baptême.",
     note:`Le formulaire est accessible jusqu’au ${bis}. Vos données ne sont transmises nulle part : elles restent sur votre appareil.`,
     q:"Pour toute question, je reste volontiers à votre disposition.", g:"Avec mes salutations et ma bénédiction,"
   }:{
@@ -355,10 +411,11 @@ function elMailParts(){ const fr=$("elSpr").value==="fr", u=elUrl(), bis=dmy($("
     p1:`Zur Geburt ${kind?"von "+kind:"Ihres Kindes"} gratulieren wir Ihnen von Herzen und freuen uns, dass ${kind||"Ihr Kind"} bald die heilige Taufe empfangen darf${wann}. Durch dieses Sakrament wird ${kind||"es"} ein Kind Gottes und Glied der Kirche.`,
     p2:"Damit die Feier gut vorbereitet und die Taufe richtig ins Taufregister eingetragen werden kann, bitten wir Sie, die offizielle Anmeldung zur Taufe auszufüllen. Das dauert nur wenige Minuten.",
     btn:"Anmeldung zur Taufe ausfüllen", alt:"Falls sich der Knopf nicht öffnet:", altL:"hier klicken",
-    ch:"Danach zwei Möglichkeiten zur Wahl",
-    o1t:"Alles elektronisch", o1:["Formular ausfüllen und auf «Fertig – PDF erstellen» klicken.","Das PDF per E-Mail an "+RETOUR+" zurücksenden (ein Knopf hilft dabei).","Beide Eltern unterschreiben dann bei der Taufvorbereitung."],
-    o2t:"Auf Papier", o2:["Formular ausfüllen und auf «Fertig – PDF erstellen» klicken.","Ausdrucken; Vater und Mutter unterschreiben beide.","Mitbringen oder per Post senden."],
-    fam:"In beiden Fällen bitte das Familienbüchlein spätestens am Vorabend der Taufe mitbringen.",
+    ch:"Für die Unterschrift dann drei Möglichkeiten zur Wahl",
+    o1t:"Alles elektronisch", o1:["Formular ausfüllen; unten unterschreiben Vater und Mutter auf dem Bildschirm (mit dem Finger oder der Maus).","Auf «Fertig – PDF erstellen» klicken und das unterschriebene PDF per E-Mail an "+RETOUR+" zurücksenden (ein Knopf hilft dabei)."],
+    o2t:"Elektronisch ausfüllen – im Priorat unterschreiben", o2:["Formular ausfüllen, das PDF erstellen und per E-Mail an "+RETOUR+" senden.","Das Priorat druckt es aus; Vater und Mutter unterschreiben vor Ort, bei der Taufvorbereitung."],
+    o3t:"Auf Papier unterschreiben", o3:["Formular ausfüllen und das PDF erstellen.","Ausdrucken; Vater und Mutter unterschreiben von Hand.","Mitbringen – oder einscannen bzw. fotografieren und per E-Mail an "+RETOUR+" zurücksenden."],
+    fam:"In jedem Fall bitte das Familienbüchlein spätestens am Vorabend der Taufe mitbringen.",
     note:`Das Formular ist bis ${bis} erreichbar. Ihre Angaben werden nirgends hin gesendet; sie bleiben auf Ihrem Gerät.`,
     q:"Für Fragen stehe ich Ihnen gerne zur Verfügung.", g:"Mit freundlichen Grüssen und priesterlichem Segen"
   };
@@ -375,7 +432,7 @@ ${a.map(x=>`<p style="${P}margin:0 0 3px;padding-left:14px;text-indent:-14px">�
 <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin:8px 0 10px"><tr><td bgcolor="${R}" style="background:${R};padding:14px 28px;border-radius:6px"><a href="${u}" style="${F}font-size:17px;font-weight:bold;color:#ffffff;text-decoration:none">${esc(T.btn)}</a></td></tr></table>
 <p style="${F}margin:0 0 30px;font-size:13px;color:${MUT}">${esc(T.alt)} <a href="${u}" style="color:${R};text-decoration:underline">${esc(T.altL)}</a></p>
 <p style="${F}margin:8px 0 14px;font-size:14px;letter-spacing:.06em;text-transform:uppercase;color:${R};font-weight:bold">${esc(T.ch)}</p>
-<table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">${opt(T.o1t,T.o1,"A")}${opt(T.o2t,T.o2,"B")}</table>
+<table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">${opt(T.o1t,T.o1,"A")}${opt(T.o2t,T.o2,"B")}${opt(T.o3t,T.o3,"C")}</table>
 <p style="${P}margin:10px 0 18px"><b>${esc(T.fam)}</b></p>
 <p style="${P}margin:0 0 14px">${esc(T.q)}</p>
 <p style="${P}margin:0 0 12px">${esc(T.g)}</p>
@@ -383,7 +440,7 @@ ${a.map(x=>`<p style="${P}margin:0 0 3px;padding-left:14px;text-indent:-14px">�
 <td valign="middle" style="${P}border-left:2px solid ${R};padding:2px 0 2px 14px"><b>P. Thibaud Favre</b><br><span style="color:${MUT};font-size:14px">${esc(T.kop.replace(" · "," "))}</span></td></tr></table>
 <p style="${F}margin:34px 0 0;padding-top:8px;border-top:1px solid #e2d9d6;font-size:12px;font-style:italic;color:#8a8380">${esc(T.note)}</p>
 </td></tr></table>`;
-  const body=`${T.a}\n\n${T.p1}\n\n${T.p2}\n${u}\n\n${T.ch}:\n\nA) ${T.o1t}\n${T.o1.map(x=>"– "+x).join("\n")}\n\nB) ${T.o2t}\n${T.o2.map(x=>"– "+x).join("\n")}\n\n${T.fam}\n\n${T.q}\n\n${T.g}\nP. Thibaud Favre\n${T.kop.replace(" · "," ")}\n\n—\n${T.note}`;
+  const body=`${T.a}\n\n${T.p1}\n\n${T.p2}\n${u}\n\n${T.ch}:\n\nA) ${T.o1t}\n${T.o1.map(x=>"– "+x).join("\n")}\n\nB) ${T.o2t}\n${T.o2.map(x=>"– "+x).join("\n")}\n\nC) ${T.o3t}\n${T.o3.map(x=>"– "+x).join("\n")}\n\n${T.fam}\n\n${T.q}\n\n${T.g}\nP. Thibaud Favre\n${T.kop.replace(" · "," ")}\n\n—\n${T.note}`;
   return {sub,body,html:html.replace("__LOGO__","data:image/png;base64,"+LOGO_B64),htmlCid:html.replace("__LOGO__","cid:wil-logo"),to:ELTERN_MAIL.filter(Boolean).join("; ")}; }
 function elMailHref(){ const {sub,body,to}=elMailParts(); return "mailto:"+encodeURIComponent(to).replace(/%40/g,"@").replace(/%3B%20/g,";")+"?subject="+encodeURIComponent(sub)+"&body="+encodeURIComponent(body); }
 const b64utf8=t=>{ const u=new TextEncoder().encode(t); let s=""; for(let i=0;i<u.length;i++) s+=String.fromCharCode(u[i]); return btoa(s); };
