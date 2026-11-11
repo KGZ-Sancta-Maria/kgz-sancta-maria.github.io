@@ -1,5 +1,5 @@
 // MyWil – travail hors ligne / offline. Enthält keine Daten, nur das Programm.
-const C='mywil-2026-11-10a';const SHELL=['./','index.html','wil.html','wil.webmanifest','wil-192.png','wil-512.png','wil-touch.png','pdf.min.js','pdf.worker.min.js'];
+const C='mywil-wil-2026-11-11b';const SHELL=['./','index.html','wil.html','wil.webmanifest','bibliothek.html','bibliothek.webmanifest','wil-192.png','wil-512.png','wil-touch.png','pdf.min.js','pdf.worker.min.js'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(C).then(c=>c.addAll(SHELL)).then(()=>self.skipWaiting()))});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(x=>x!==C).map(x=>caches.delete(x)))).then(()=>self.clients.claim()))});
 self.addEventListener('fetch',e=>{const r=e.request;if(r.method!=='GET')return;const u=new URL(r.url);if(/\.bin$/.test(u.pathname))return;
