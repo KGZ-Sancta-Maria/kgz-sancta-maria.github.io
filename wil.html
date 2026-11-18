@@ -828,6 +828,7 @@ window.WIL_LIT_CSS = `.l2-days{display:grid;grid-template-columns:repeat(auto-fi
   function detect(o, name) {
     if (o && o.app === 'natel-prioratskalender' && Array.isArray(o.events)) return { key: 'prio', label: 'src_prio', data: o };
     if (o && o.app === 'natel-gaeste' && Array.isArray(o.guests)) return { key: 'gaeste', label: 'src_wil', data: o };
+    if (o && o.app === 'natel-sakristei' && (o.inv || o.rel)) return { key: 'sak', label: 'src_wil', data: o };
     if (o && o.app === 'liber-animarum-wil' && (o.sections || o.data)) return { key: 'lsa', label: 'src_lsa', data: o };
     if (o && o.data && typeof o.data === 'object' && (/wil/i.test(o.typ || '') || o.data['wochenplan-wil-monate'])) {
       const d = {}; for (const k of KEEP) { if (o.data[k] == null) continue; try { d[k] = typeof o.data[k] === 'string' ? JSON.parse(o.data[k]) : o.data[k] } catch (e) { } }
@@ -1153,10 +1154,72 @@ window.WIL_LIT_CSS = `.l2-days{display:grid;grid-template-columns:repeat(auto-fi
     if (n === 'plan') { const D = await M.getDocs(); const d = D[+a]; if (!d) return; document.getElementById('plantitle').textContent = t('g_' + d.grp) + (d.draft ? ' – ' + t('draft') : ''); M.renderPdf(d.b64, document.getElementById('pdfview')) }
   }
 
+  /* ---------- (18.11.2026) Sakristei: Inventar und Reliquien zum Suchen – wo ist was? ----------
+     Daten: 00. App › Daten › Sakristei_Natel.json (vom Computer aus den Sicherungen von Inventar und Reliquien erstellt). */
+  Object.assign(T.fr, { sak: 'Sacristie', sak_sub: 'Trouver objets et reliques', sak_q: 'Chercher : objet, saint, couleur, numéro, lieu…', sak_all: 'Tout', sak_inv: 'Inventaire', sak_rel: 'Reliques', sak_open: 'En cours', sak_today: 'Saints du jour', sak_where: 'Où ?', sak_noplace: 'Emplacement pas encore indiqué', sak_rep: 'Réparation', sak_check: 'À vérifier', sak_cond: 'État', sak_note: 'Remarque', sak_inscr: 'Inscription', sak_relq: 'Reliquaire', sak_fest: 'Fête', sak_prev: 'Ancien n°', sak_stand: 'Inventaire : état du {a} · Reliques : état du {b}', sak_more: 'Afficher plus', sak_none: 'Rien trouvé.', sak_nodata: 'Les données de la sacristie ne sont pas encore sur ce Natel.', sak_pdf: 'Listes complètes en PDF : Plus › Autres plans.', sak_week: 'Ces 7 prochains jours', sak_todayh: 'Aujourd’hui', sak_lage: 'Emplacement sur la photo', sak_noplace_h: 'Sans emplacement', sak_n: '{n} résultats', sak_exp: 'exposée à la vénération' });
+  Object.assign(T.de, { sak: 'Sakristei', sak_sub: 'Gegenstände und Reliquien finden', sak_q: 'Suchen: Gegenstand, Heilige, Farbe, Nummer, Ort …', sak_all: 'Alle', sak_inv: 'Inventar', sak_rel: 'Reliquien', sak_open: 'Offen', sak_today: 'Heilige des Tages', sak_where: 'Wo?', sak_noplace: 'Standort noch nicht eingetragen', sak_rep: 'Reparatur', sak_check: 'Zu prüfen', sak_cond: 'Zustand', sak_note: 'Bemerkung', sak_inscr: 'Inschrift', sak_relq: 'Reliquiar', sak_fest: 'Fest', sak_prev: 'Bisherige Nr.', sak_stand: 'Inventar: Stand {a} · Reliquien: Stand {b}', sak_more: 'Mehr anzeigen', sak_none: 'Nichts gefunden.', sak_nodata: 'Die Daten der Sakristei sind noch nicht auf diesem Handy.', sak_pdf: 'Ganze Listen als PDF: Mehr › Andere Pläne.', sak_week: 'Die nächsten 7 Tage', sak_todayh: 'Heute', sak_lage: 'Standort auf dem Foto', sak_noplace_h: 'Ohne Standort', sak_n: '{n} Treffer', sak_exp: 'zur Verehrung ausgestellt' });
+  const SAK = () => src('sak');
+  const sakAll = () => { const S = SAK(); if (!S) return []; if (SAK.c === S) return SAK.l;
+    const mk = (x, typ, K) => ({ ...x, typ, ref: `${x.k || ''} ${String(x.n || 0).padStart(3, '0')}`, kn: (K || {})[x.k] || '', q: norm([x.k, x.n, String(x.n || 0).padStart(3, '0'), (K || {})[x.k], x.t, x.st, x.f, x.r, x.s, x.p, x.o, x.in, x.rq, x.art, x.a, x.b, x.zt, x.bis, x.tag].filter(Boolean).join(' ')) });
+    SAK.l = [...(S.inv?.items || []).map(x => mk(x, 'inv', S.inv.kat)), ...(S.rel?.items || []).map(x => mk(x, 'rel', S.rel.kat))]; SAK.c = S; return SAK.l };
+  const sakPic = k => (k && SAK()?.pics?.[k]) || '';
+  const sakPlace = x => [x.r, x.s, x.p].filter(Boolean).join(' › ') || x.o || '';
+  const sakOpen = x => (x.rep && x.rep.length) || !!x.pr;
+  const sakTitle = x => x.typ === 'rel' ? (x.k === 'HL' ? (L() === 'fr' ? 'S. ' : 'hl. ') : x.k === 'SL' ? (L() === 'fr' ? 'B. ' : 'sel. ') : '') + (x.t || x.kn) : (x.t || x.kn);
+  const sakThumb = x => { const p = sakPic(x.ph); return `<span class="sk-th">${p ? `<img src="${p}" alt="" loading="lazy">${x.pm ? `<i style="left:${x.pm.x * 100}%;top:${x.pm.y * 100}%"></i>` : ''}` : `<b>${esc(x.k || '')}</b>`}</span>` };
+  const sakRow = x => `<button class="row sk-row" data-a="go" data-v="sakitem" data-arg="${esc(x.id)}">${sakThumb(x)}<div class="m"><b>${esc(sakTitle(x))}</b><small>${esc(x.ref)}${x.typ === 'inv' && x.f ? ' · ' + esc(x.f) : ''}${x.typ === 'rel' && x.in ? ' · «' + esc(x.in) + '»' : ''}</small><small class="sk-pl">📍 ${sakPlace(x) ? esc(sakPlace(x)) : `<em>${t('sak_noplace')}</em>`}</small></div><div class="s">${x.rep && x.rep.length ? `<span class="chip amber">${t('sak_rep')}</span>` : ''}${x.pr ? `<span class="chip amber">${t('sak_check')}</span>` : ''}</div></button>`;
+  if (!document.getElementById('wil-sak-css')) { const st = document.createElement('style'); st.id = 'wil-sak-css'; st.textContent = `
+    .sk-th{position:relative;flex:none;width:58px;height:58px;border-radius:8px;overflow:hidden;background:var(--tint);display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:13px}
+    .sk-th img{width:100%;height:100%;object-fit:cover}.sk-th i{position:absolute;width:10px;height:10px;margin:-6px 0 0 -6px;border:2px solid #d22;border-radius:50%}
+    .sk-pl{color:var(--ink)!important}.sk-q{width:100%;margin:10px 0 8px}.sk-h{margin:16px 2px 6px;font-size:15px}.sk-foot{margin:18px 2px 8px;font-size:13px;color:var(--muted)}
+    .sk-big{display:block;width:100%;max-height:60vh;object-fit:contain;border-radius:10px;background:var(--tint)}
+    .sk-lage{position:relative;display:inline-block;width:100%}.sk-lage img{display:block;width:100%;border-radius:10px}
+    .sk-lage i{position:absolute;border:3px solid #e02020;border-radius:50%;box-shadow:0 0 0 2px #fff8;transform:translate(-50%,-50%)}
+    .sk-dl{display:grid;grid-template-columns:auto 1fr;gap:6px 12px;margin:10px 0}.sk-dl dt{color:var(--muted);font-size:14px}.sk-dl dd{margin:0}
+    .sk-where{font-size:18px;font-weight:600;margin:6px 0 10px}`; document.head.appendChild(st) }
+  function vSak() {
+    const S = SAK(); if (!S) return `<h1>${t('sak')}</h1><div class="card"><b>${t('sak_nodata')}</b><span class="small muted">${t('sak_pdf')}</span></div>`;
+    const tab = ui.skt || 'all', q = norm(ui.skq || ''), A = sakAll(), lim = +(ui.skl || 60);
+    const tabs = [['all', 'sak_all'], ['inv', 'sak_inv'], ['rel', 'sak_rel'], ['open', 'sak_open'], ['today', 'sak_today']].map(([k, l]) => `<button data-a="ui" data-k="skt" data-val="${k}" aria-pressed="${tab === k}">${t(l)}</button>`).join('');
+    const words = q.split(/\s+/).filter(Boolean);
+    let L0 = A.filter(x => tab === 'inv' ? x.typ === 'inv' : tab === 'rel' ? x.typ === 'rel' : tab === 'open' ? sakOpen(x) : true);
+    if (words.length) L0 = L0.filter(x => words.every(w => x.q.includes(w)));
+    let body = '';
+    if (tab === 'today') {
+      const dd = [...Array(8)].map((_, i) => addDays(today(), i)), dm = s => { const [, mm, d] = s.split('-').map(Number); return d + '.' + mm };
+      const dOf = x => dd.find(s => String(x.tag || '').replace(/\s/g, '') === dm(s));
+      const R0 = L0.filter(x => x.typ === 'rel' && dOf(x)), T0 = R0.filter(x => dOf(x) === dd[0]), Wk = R0.filter(x => dOf(x) !== dd[0]).sort((a, b) => dOf(a).localeCompare(dOf(b)));
+      body = `<h3 class="sk-h">${t('sak_todayh')} · ${esc(fmtD(today()))}</h3><div class="list">${T0.map(sakRow).join('') || `<div class="empty">${t('sak_none')}</div>`}</div>
+        <h3 class="sk-h">${t('sak_week')}</h3><div class="list">${Wk.map(x => sakRow(x).replace('<div class="m">', `<div class="m"><small>${esc(fmtD(dOf(x)))}</small>`)).join('') || `<div class="empty">${t('sak_none')}</div>`}</div>`;
+    } else if (!words.length && (tab === 'inv' || tab === 'rel')) {
+      const G = new Map(); for (const x of L0) { const g = x.r || t('sak_noplace_h'); if (!G.has(g)) G.set(g, []); G.get(g).push(x) }
+      const keys = [...G.keys()].sort((a, b) => (a === t('sak_noplace_h')) - (b === t('sak_noplace_h')) || a.localeCompare(b));
+      body = keys.map(g => `<h3 class="sk-h">${esc(g)} <small class="muted">(${G.get(g).length})</small></h3><div class="list">${G.get(g).sort((a, b) => (a.s || '').localeCompare(b.s || '') || (a.k || '').localeCompare(b.k || '') || (a.n || 0) - (b.n || 0)).map(sakRow).join('')}</div>`).join('');
+    } else {
+      L0.sort((a, b) => (a.typ === b.typ ? 0 : a.typ === 'inv' ? -1 : 1) || (a.k || '').localeCompare(b.k || '') || (a.n || 0) - (b.n || 0));
+      body = `${words.length ? `<div class="small muted">${t('sak_n', { n: L0.length })}</div>` : ''}<div class="list">${L0.slice(0, lim).map(sakRow).join('') || `<div class="empty">${t('sak_none')}</div>`}</div>${L0.length > lim ? `<button class="btn" data-a="ui" data-k="skl" data-val="${lim + 60}">${t('sak_more')}</button>` : ''}`;
+    }
+    const fd = s => s ? fmtD(String(s).slice(0, 10)) : '–';
+    return `<h1>${t('sak')}</h1><div class="tabs" role="group">${tabs}</div>
+      ${tab !== 'today' ? `<input id="skq" class="sk-q" type="search" placeholder="${esc(t('sak_q'))}" value="${esc(ui.skq || '')}" data-live="skq">` : ''}
+      ${body}<div class="sk-foot">${esc(t('sak_stand', { a: fd(S.inv?.stand), b: fd(S.rel?.stand) }))}<br>${t('sak_pdf')}</div>`;
+  }
+  function vSakItem(id) {
+    const x = sakAll().find(o => o.id === id); if (!x) return `<h1>${t('sak')}</h1><div class="empty">${t('sak_none')}</div>`;
+    const big = sakPic(x.ph), lg = sakPic(x.lg), m = x.lm;
+    const row = (l, v) => v ? `<dt>${t(l)}</dt><dd>${esc(v)}</dd>` : '';
+    return `<h1>${esc(sakTitle(x))}</h1><div class="small muted">${esc(x.ref)} · ${esc(x.kn)}${x.st ? ' · ' + esc(x.st) : ''}</div>
+      <div class="sk-where">📍 ${sakPlace(x) ? esc(sakPlace(x)) : `<em>${t('sak_noplace')}</em>`}</div>
+      ${big ? `<div class="sk-lage"><img src="${big}" alt="">${x.pm ? `<i style="left:${x.pm.x * 100}%;top:${x.pm.y * 100}%;width:${x.pm.r * 200}%;aspect-ratio:1"></i>` : ''}</div>` : ''}
+      ${lg ? `<h3 class="sk-h">${t('sak_lage')}</h3><div class="sk-lage"><img src="${lg}" alt="">${m ? `<i style="left:${m.x * 100}%;top:${m.y * 100}%;width:${m.r * 200}%;aspect-ratio:1"></i>` : ''}</div>` : ''}
+      <dl class="sk-dl">${row('sak_cond', [x.z, x.zt].filter(Boolean).join(' – '))}${row('sak_inscr', x.in)}${row('sak_relq', x.rq)}${row('sak_fest', x.tag)}${row('sak_check', x.pr)}${row('sak_note', x.a)}${row('sak_prev', x.bis)}${(x.rep || []).map(r => row('sak_rep', [r.w, r.d ? '(' + fmtD(r.d) + ')' : ''].filter(Boolean).join(' '))).join('')}${x.v ? `<dt></dt><dd class="small muted">✓ ${t('sak_exp')}</dd>` : ''}</dl>
+      ${noteBtn(t('sak') + ' – ' + x.ref + ' ' + sakTitle(x), 'house')}`;
+  }
+
   function vMore() {
     const tile = (v, icon, label, sub) => `<button class="tile" data-a="go" data-v="${v}">${ICON[icon]}<b>${t(label)}</b>${sub ? `<small>${sub}</small>` : ''}</button>`;
     return `<h1>${t('more')}</h1><div class="grid">
-      ${`<button class="tile" data-a="go" data-v="plans" data-arg="other">${ICON.note}<b>${t('other_plans')}</b><small>${esc(t('other_plans_sub'))}</small></button>`}${has.defunts() ? tile('defunts', 'cross', 'defunts') : ''}${has.affaires() ? tile('affaires', 'check', 'matters', String(openTodos().length + openTr().length)) : ''}${has.groupes() ? tile('groupes', 'group', 'groups') : ''}${has.coutumier() ? tile('coutumier', 'book', 'coutumier') : ''}${tile('hotes', 'bed', 'hotes')}${has.vehicules() ? tile('vehicules', 'car', 'vehicules') : ''}${tile('dossiers', 'folder', 'dossiers')}${tile('donnees', 'data', 'data')}</div>`;
+      ${`<button class="tile" data-a="go" data-v="plans" data-arg="other">${ICON.note}<b>${t('other_plans')}</b><small>${esc(t('other_plans_sub'))}</small></button>`}${SAK() ? tile('sakristei', 'book', 'sak', esc(t('sak_sub'))) : ''}${has.defunts() ? tile('defunts', 'cross', 'defunts') : ''}${has.affaires() ? tile('affaires', 'check', 'matters', String(openTodos().length + openTr().length)) : ''}${has.groupes() ? tile('groupes', 'group', 'groups') : ''}${has.coutumier() ? tile('coutumier', 'book', 'coutumier') : ''}${tile('hotes', 'bed', 'hotes')}${has.vehicules() ? tile('vehicules', 'car', 'vehicules') : ''}${tile('dossiers', 'folder', 'dossiers')}${tile('donnees', 'data', 'data')}</div>`;
   }
 
   /* ---------- démarrage ---------- */
@@ -1210,9 +1273,9 @@ window.WIL_LIT_CSS = `.l2-days{display:grid;grid-template-columns:repeat(auto-fi
     detect, onLock() { lsa = null }, onImport() { lsa = null },
     freshness() { const lv = levelTxt(); const pre = lv ? esc(lv) + ' · ' : ''; const sa = M.st && (M.st.syncMade || M.st.syncAt); if (sa) { const d = new Date(sa); return pre + esc((diffDays(isoD(d), today()) === 0) ? t('fresh_today', { h: d.toTimeString().slice(0, 5) }) : t('fresh_at', { d: fmtD(isoD(d)), h: d.toTimeString().slice(0, 5) })) } const i = srcInfo('wil'); return i ? esc(t('data_of', { d: fmtD((i.data.erstellt || i.fileDate || i.importedAt).slice(0, 10)) })) : esc(t('app_sub')) },
     tabs: [{ v: 'home', icon: 'home', label: 'home' }, { v: 'agenda', icon: 'cal', label: 'agenda' }, { v: 'fideles', icon: 'people', label: 'fideles' }, { v: 'notes', icon: 'note', label: 'notes' }, { v: 'more', icon: 'more', label: 'more' }],
-    tabOf: { person: 'fideles', household: 'fideles', plans: 'home', plan: 'home' },
+    tabOf: { person: 'fideles', household: 'fideles', plans: 'home', plan: 'home', sakristei: 'more', sakitem: 'more' },
     noteDomains: { fideles: 'nd_fideles', agenda: 'nd_agenda', matters: 'nd_matters', groups: 'nd_groups', house: 'nd_house', other: 'nd_other' },
-    after, views: { plans: vPlans, plan: vPlan, home: vHome, agenda: vAgenda, fideles: vFideles, person: vPerson, household: vHousehold, defunts: vDefunts, affaires: vAffaires, groupes: vGroupes, coutumier: vCoutumier, hotes: vHotes, vehicules: vVehicules, more: vMore },
+    after, views: { plans: vPlans, plan: vPlan, home: vHome, agenda: vAgenda, fideles: vFideles, person: vPerson, household: vHousehold, defunts: vDefunts, affaires: vAffaires, groupes: vGroupes, coutumier: vCoutumier, hotes: vHotes, vehicules: vVehicules, sakristei: vSak, sakitem: vSakItem, more: vMore },
     actions: {
       agjump(el) { const d = el.dataset.d; document.querySelectorAll('.ags').forEach(b => b.classList.toggle('on', b === el)); const r = [...document.querySelectorAll('.row[id^="ag-"]')].find(x => x.id.slice(3) >= d); if (r) r.scrollIntoView({ behavior: 'smooth', block: 'start' }) },
       async lsaopen() { const pw = document.getElementById('lsapw').value, err = document.getElementById('lsaerr'); if (!pw) return; err.textContent = t('working');
